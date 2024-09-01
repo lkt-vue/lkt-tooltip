@@ -1,0 +1,26 @@
+.lkt-tooltip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--lkt-tooltip-gap);
+    padding: var(--lkt-tooltip-padding);
+    min-width: var(--lkt-tooltip-min-width);
+    max-width: var(--lkt-tooltip-max-width);
+    width: var(--lkt-tooltip-width);
+    background: var(--lkt-tooltip-bg);
+    border-radius: var(--lkt-tooltip-border-radius);
+    border-width: var(--lkt-tooltip-border-width);
+    border-style: var(--lkt-tooltip-border-style);
+    border-color: var(--lkt-tooltip-border-color);
+    font-size: var(--lkt-tooltip-font-size);
+    font-weight: var(--lkt-tooltip-font-weight);
+    color: var(--lkt-tooltip-color);
+    text-align: var(--lkt-tooltip-text-align);
+    transition: var(--lkt-tooltip-transition);
+}
+
+.lkt-tooltip:hover {
+    background: var(--lkt-tooltip-bg-hover);
+    border-color: var(--lkt-tooltip-border-color-hover);
+    color: var(--lkt-tooltip-color-hover);
+}
