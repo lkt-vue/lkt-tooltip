@@ -1,4 +1,4 @@
-import { defineComponent, useSlots, computed, openBlock, createElementBlock, normalizeClass, unref, renderSlot } from "vue";
+import { defineComponent, useSlots, ref, computed, watch, onMounted, onBeforeUnmount, withDirectives, openBlock, createElementBlock, normalizeClass, normalizeStyle, unref, renderSlot, vShow, nextTick } from "vue";
 import { __ } from "lkt-i18n";
 const _hoisted_1 = {
   key: 0,
@@ -8,14 +8,21 @@ const _hoisted_2 = ["innerHTML"];
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "LktTooltip",
   props: {
+    modelValue: { type: Boolean },
     class: { default: "" },
     text: { default: "" },
     icon: { default: "" },
-    iconAtEnd: { type: Boolean, default: false }
+    iconAtEnd: { type: Boolean, default: false },
+    referrerWidth: { type: Boolean, default: false },
+    referrer: {},
+    locationY: { default: "bottom" }
   },
-  setup(__props) {
+  emits: ["update:modelValue"],
+  setup(__props, { emit: __emit }) {
+    const emit = __emit;
     const slots = useSlots();
     const props = __props;
+    const styles = ref({}), isOpen = ref(props.modelValue), sizerElement = ref(null);
     const computedClassName = computed(() => {
       return props.class;
     }), computedText = computed(() => {
@@ -35,18 +42,104 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       }
       return text;
     });
+    const doClose = () => {
+      isOpen.value = false;
+    };
+    const adjustStyle = () => {
+      const rect = props.referrer.getBoundingClientRect(), left = rect.left, sizerElementWidth = sizerElement.value.offsetWidth;
+      let contentEndsAtRight = left + sizerElementWidth;
+      console.log("adjustStyle", left, sizerElementWidth, contentEndsAtRight, window.innerWidth);
+      if (contentEndsAtRight > window.innerWidth) {
+        let diff = contentEndsAtRight - window.innerWidth;
+        styles.value.left = left - diff + "px";
+        console.log("contentEndsAtRight 112121", diff);
+      }
+    };
+    const calcStyle = () => {
+      if (!props.referrer) return;
+      const rect = props.referrer.getBoundingClientRect(), left = rect.left;
+      let _styles = {
+        position: "fixed",
+        transform: "fixed",
+        transition: "fixed",
+        left: left + "px"
+      };
+      let data = [
+        "position: fixed",
+        "transform: none",
+        "transition: none",
+        "left: " + left + "px"
+      ];
+      if (props.referrerWidth) {
+        data.push("width: " + props.referrer.offsetWidth + "px");
+        _styles.width = props.referrer.offsetWidth + "px";
+      }
+      if (props.locationY === "top") {
+        let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight;
+        data.push("bottom: " + bottom + "px");
+        _styles.bottom = bottom + "px";
+      } else {
+        let top = rect.top + props.referrer.offsetHeight;
+        data.push("top: " + top + "px");
+        _styles.top = top + "px";
+      }
+      styles.value = _styles;
+      nextTick(() => {
+        adjustStyle();
+      });
+    }, onClickOutside = (e) => {
+      if (!props.referrer.contains(e.target)) {
+        doClose();
+        return;
+      }
+    };
+    watch(() => props.modelValue, (v) => isOpen.value = v);
+    watch(isOpen, (v) => {
+      if (v) calcStyle();
+      emit("update:modelValue", v);
+    });
+    onMounted(() => {
+      window.addEventListener("click", onClickOutside);
+      window.addEventListener("scroll", calcStyle);
+      window.addEventListener("resize", calcStyle);
+      if (props.referrer) {
+        let modalScroller = props.referrer.closest(".lkt-modal");
+        if (modalScroller) {
+          modalScroller.addEventListener("scroll", calcStyle);
+        }
+      }
+      if (isOpen.value) {
+        calcStyle();
+      }
+    });
+    onBeforeUnmount(() => {
+      window.removeEventListener("click", onClickOutside);
+      window.removeEventListener("scroll", calcStyle);
+      window.removeEventListener("resize", calcStyle);
+      if (props.referrer) {
+        let modalScroller = props.referrer.closest(".lkt-modal");
+        if (modalScroller) {
+          modalScroller.removeEventListener("scroll", calcStyle);
+        }
+      }
+    });
     return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", {
-        class: normalizeClass(["lkt-tooltip", computedClassName.value])
+      return withDirectives((openBlock(), createElementBlock("div", {
+        ref_key: "sizerElement",
+        ref: sizerElement,
+        class: normalizeClass(["lkt-tooltip", computedClassName.value]),
+        style: normalizeStyle(styles.value)
       }, [
         unref(slots).default ? (openBlock(), createElementBlock("div", _hoisted_1, [
-          renderSlot(_ctx.$slots, "default")
+          renderSlot(_ctx.$slots, "default", { doClose })
         ])) : (openBlock(), createElementBlock("div", {
           key: 1,
           class: "lkt-tooltip-content",
           innerHTML: computedText.value
         }, null, 8, _hoisted_2))
-      ], 2);
+      ], 6)), [
+        [vShow, isOpen.value]
+      ]);
     };
   }
 });

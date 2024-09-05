@@ -1,23 +1,36 @@
 <script setup lang="ts">
 
 // Props
-import {computed, useSlots} from "vue";
+import {computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch} from "vue";
 import {__} from "lkt-i18n";
+
+const emit = defineEmits(['update:modelValue']);
 
 const slots = useSlots();
 
 const props = withDefaults(defineProps<{
-    class: string,
-    text: string,
-    icon: string,
-    iconAtEnd: boolean,
+    modelValue?: boolean
+    class?: string,
+    text?: string,
+    icon?: string,
+    iconAtEnd?: boolean,
 
+    referrerWidth?: boolean,
+    referrer: HTMLElement,
+    locationY: 'top' | 'bottom'
 }>(), {
+    open: false,
     class: '',
     text: '',
     icon: '',
     iconAtEnd: false,
+    referrerWidth: false,
+    locationY: 'bottom'
 });
+
+const styles = ref({}),
+    isOpen = ref(props.modelValue),
+    sizerElement = ref(null);
 
 const computedClassName = computed(() => {
         return props.class;
@@ -43,14 +56,111 @@ const computedClassName = computed(() => {
         return text;
     });
 
+const doClose = () => {
+    isOpen.value = false;
+}
+
+const adjustStyle = () => {
+
+    const rect = props.referrer.getBoundingClientRect(),
+        left = rect.left,
+        sizerElementWidth = sizerElement.value.offsetWidth;
+
+    let contentEndsAtRight = left + sizerElementWidth;
+
+    if (contentEndsAtRight > window.innerWidth) {
+        let diff = contentEndsAtRight - window.innerWidth;
+        styles.value.left = (left - diff) + 'px';
+    }
+}
+
+const calcStyle = () => {
+        if (!props.referrer) return;
+        const rect = props.referrer.getBoundingClientRect(),
+            left = rect.left;
+
+        let _styles = {
+            position: 'fixed',
+            transform: 'fixed',
+            transition: 'fixed',
+            left: left + 'px',
+        }
+
+        if (props.referrerWidth) {
+            _styles.width = props.referrer.offsetWidth + 'px';
+        }
+
+        if (props.locationY === 'top') {
+            let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight;
+            _styles.bottom = bottom + 'px';
+        } else {
+            let top = rect.top + props.referrer.offsetHeight;
+            _styles.top = top + 'px';
+        }
+
+        styles.value = _styles;
+
+        nextTick(() => {
+            adjustStyle();
+        })
+    },
+    onClickOutside = (e: PointerEvent) => {
+        //@ts-ignore
+        if (!props.referrer.contains(e.target)) {
+            doClose();
+            return;
+        }
+    };
+
+watch(() => props.modelValue, v => isOpen.value = v);
+watch(isOpen, v => {
+    if (v) calcStyle();
+    emit('update:modelValue', v);
+});
+
+
+onMounted(() => {
+    window.addEventListener('click', onClickOutside);
+    window.addEventListener('scroll', calcStyle);
+    window.addEventListener('resize', calcStyle);
+
+    if (props.referrer) {
+        let modalScroller = props.referrer.closest(".lkt-modal");
+        if (modalScroller) {
+            modalScroller.addEventListener('scroll', calcStyle);
+        }
+    }
+
+    if (isOpen.value) {
+        calcStyle();
+    }
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('click', onClickOutside);
+    window.removeEventListener('scroll', calcStyle);
+    window.removeEventListener('resize', calcStyle);
+
+    if (props.referrer) {
+        let modalScroller = props.referrer.closest(".lkt-modal");
+        if (modalScroller) {
+            modalScroller.removeEventListener('scroll', calcStyle);
+        }
+    }
+})
 
 </script>
 
 <template>
-    <div class="lkt-tooltip" :class="computedClassName">
+    <div
+        v-show="isOpen"
+        ref="sizerElement"
+        class="lkt-tooltip"
+        :class="computedClassName"
+        :style="styles">
         <template v-if="slots.default">
             <div class="lkt-tooltip-content">
-                <slot/>
+                <slot name="default" :do-close="doClose"/>
             </div>
         </template>
         <template v-else>
