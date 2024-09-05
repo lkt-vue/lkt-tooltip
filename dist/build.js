@@ -13,6 +13,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     text: { default: "" },
     icon: { default: "" },
     iconAtEnd: { type: Boolean, default: false },
+    referrerMargin: { default: 0 },
     windowMargin: { default: 0 },
     referrerWidth: { type: Boolean, default: false },
     referrer: {},
@@ -83,10 +84,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         _styles.width = props.referrer.offsetWidth + "px";
       }
       if (props.locationY === "top") {
-        let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight;
+        let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight - props.referrerMargin;
         _styles.bottom = bottom + "px";
       } else {
-        let top = rect.top + props.referrer.offsetHeight;
+        let top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
         _styles.top = top + "px";
       }
       styles.value = _styles;

@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<{
     icon?: string,
     iconAtEnd?: boolean,
 
+    referrerMargin?: number
     windowMargin?: number
     referrerWidth?: boolean,
     referrer: HTMLElement,
@@ -27,7 +28,8 @@ const props = withDefaults(defineProps<{
     iconAtEnd: false,
     referrerWidth: false,
     locationY: 'bottom',
-    windowMargin: 0
+    referrerMargin: 0,
+    windowMargin: 0,
 });
 
 const styles = ref({}),
@@ -123,10 +125,10 @@ const calcStyle = () => {
         }
 
         if (props.locationY === 'top') {
-            let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight;
+            let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight - props.referrerMargin;
             _styles.bottom = bottom + 'px';
         } else {
-            let top = rect.top + props.referrer.offsetHeight;
+            let top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
             _styles.top = top + 'px';
         }
 
