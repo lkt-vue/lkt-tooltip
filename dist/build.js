@@ -13,6 +13,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     text: { default: "" },
     icon: { default: "" },
     iconAtEnd: { type: Boolean, default: false },
+    windowMargin: { default: 0 },
     referrerWidth: { type: Boolean, default: false },
     referrer: {},
     locationY: { default: "bottom" }
@@ -45,14 +46,28 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const doClose = () => {
       isOpen.value = false;
     };
+    const getScrollbarWidth = () => {
+      const outer = document.createElement("div");
+      outer.style.visibility = "hidden";
+      outer.style.overflow = "scroll";
+      outer.style.msOverflowStyle = "scrollbar";
+      document.body.appendChild(outer);
+      const inner = document.createElement("div");
+      outer.appendChild(inner);
+      const scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
+      outer.parentNode.removeChild(outer);
+      return scrollbarWidth;
+    };
     const adjustStyle = () => {
       const rect = props.referrer.getBoundingClientRect(), left = rect.left, sizerElementWidth = sizerElement.value.offsetWidth;
       let contentEndsAtRight = left + sizerElementWidth;
-      console.log("adjustStyle", left, sizerElementWidth, contentEndsAtRight, window.innerWidth);
       if (contentEndsAtRight > window.innerWidth) {
         let diff = contentEndsAtRight - window.innerWidth;
-        styles.value.left = left - diff + "px";
-        console.log("contentEndsAtRight 112121", diff);
+        let scrollBarWidth = getScrollbarWidth();
+        styles.value.left = left - diff - props.windowMargin - scrollBarWidth + "px";
+        if (props.windowMargin) {
+          styles.value.right = props.windowMargin + "px";
+        }
       }
     };
     const calcStyle = () => {
@@ -64,23 +79,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         transition: "fixed",
         left: left + "px"
       };
-      let data = [
-        "position: fixed",
-        "transform: none",
-        "transition: none",
-        "left: " + left + "px"
-      ];
       if (props.referrerWidth) {
-        data.push("width: " + props.referrer.offsetWidth + "px");
         _styles.width = props.referrer.offsetWidth + "px";
       }
       if (props.locationY === "top") {
         let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight;
-        data.push("bottom: " + bottom + "px");
         _styles.bottom = bottom + "px";
       } else {
         let top = rect.top + props.referrer.offsetHeight;
-        data.push("top: " + top + "px");
         _styles.top = top + "px";
       }
       styles.value = _styles;

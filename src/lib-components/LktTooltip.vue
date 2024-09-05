@@ -15,9 +15,10 @@ const props = withDefaults(defineProps<{
     icon?: string,
     iconAtEnd?: boolean,
 
+    windowMargin?: number
     referrerWidth?: boolean,
     referrer: HTMLElement,
-    locationY: 'top' | 'bottom'
+    locationY?: 'top' | 'bottom'
 }>(), {
     open: false,
     class: '',
@@ -25,7 +26,8 @@ const props = withDefaults(defineProps<{
     icon: '',
     iconAtEnd: false,
     referrerWidth: false,
-    locationY: 'bottom'
+    locationY: 'bottom',
+    windowMargin: 0
 });
 
 const styles = ref({}),
@@ -60,6 +62,30 @@ const doClose = () => {
     isOpen.value = false;
 }
 
+
+const getScrollbarWidth = () => {
+    // Source: https://stackoverflow.com/questions/13382516/getting-scroll-bar-width-using-javascript
+
+    // Creating invisible container
+    const outer = document.createElement('div');
+    outer.style.visibility = 'hidden';
+    outer.style.overflow = 'scroll'; // forcing scrollbar to appear
+    outer.style.msOverflowStyle = 'scrollbar'; // needed for WinJS apps
+    document.body.appendChild(outer);
+
+    // Creating inner element and placing it in the container
+    const inner = document.createElement('div');
+    outer.appendChild(inner);
+
+    // Calculating difference between container's full width and the child width
+    const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
+
+    // Removing temporary elements from the DOM
+    outer.parentNode.removeChild(outer);
+
+    return scrollbarWidth;
+}
+
 const adjustStyle = () => {
 
     const rect = props.referrer.getBoundingClientRect(),
@@ -70,7 +96,13 @@ const adjustStyle = () => {
 
     if (contentEndsAtRight > window.innerWidth) {
         let diff = contentEndsAtRight - window.innerWidth;
-        styles.value.left = (left - diff) + 'px';
+        let scrollBarWidth = getScrollbarWidth();
+
+        styles.value.left = (left - diff - props.windowMargin - scrollBarWidth) + 'px';
+
+        if (props.windowMargin) {
+            styles.value.right = props.windowMargin + 'px';
+        }
     }
 }
 
