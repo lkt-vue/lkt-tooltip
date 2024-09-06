@@ -62,9 +62,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const adjustStyle = () => {
       const rect = props.referrer.getBoundingClientRect(), left = rect.left, sizerElementWidth = sizerElement.value.offsetWidth;
       let contentEndsAtRight = left + sizerElementWidth;
-      if (contentEndsAtRight > window.innerWidth) {
+      let scrollBarWidth = getScrollbarWidth();
+      if (contentEndsAtRight > window.innerWidth - props.windowMargin - scrollBarWidth) {
         let diff = contentEndsAtRight - window.innerWidth;
-        let scrollBarWidth = getScrollbarWidth();
         styles.value.left = left - diff - props.windowMargin - scrollBarWidth + "px";
         if (props.windowMargin) {
           styles.value.right = props.windowMargin + "px";

@@ -95,11 +95,10 @@ const adjustStyle = () => {
         sizerElementWidth = sizerElement.value.offsetWidth;
 
     let contentEndsAtRight = left + sizerElementWidth;
+    let scrollBarWidth = getScrollbarWidth();
 
-    if (contentEndsAtRight > window.innerWidth) {
+    if (contentEndsAtRight > (window.innerWidth - props.windowMargin - scrollBarWidth)) {
         let diff = contentEndsAtRight - window.innerWidth;
-        let scrollBarWidth = getScrollbarWidth();
-
         styles.value.left = (left - diff - props.windowMargin - scrollBarWidth) + 'px';
 
         if (props.windowMargin) {
