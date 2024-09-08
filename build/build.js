@@ -95,7 +95,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         adjustStyle();
       });
     }, onClickOutside = (e) => {
-      if (!props.referrer.contains(e.target)) {
+      if (isOpen.value && !(sizerElement.value.contains(e.target) || props.referrer.contains(e.target))) {
         doClose();
         return;
       }

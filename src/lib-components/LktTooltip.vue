@@ -139,7 +139,7 @@ const calcStyle = () => {
     },
     onClickOutside = (e: PointerEvent) => {
         //@ts-ignore
-        if (!props.referrer.contains(e.target)) {
+        if (isOpen.value && !(sizerElement.value.contains(e.target) || props.referrer.contains(e.target))) {
             doClose();
             return;
         }
