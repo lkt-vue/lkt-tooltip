@@ -17,10 +17,16 @@
     color: var(--lkt-tooltip-color);
     text-align: var(--lkt-tooltip-text-align);
     transition: var(--lkt-tooltip-transition);
+    z-index: 200;
 }
 
 .lkt-tooltip:hover {
     background: var(--lkt-tooltip-bg-hover);
     border-color: var(--lkt-tooltip-border-color-hover);
     color: var(--lkt-tooltip-color-hover);
+}
+
+.lkt-tooltip-content {
+    height: 100%;
+    overflow: auto;
 }

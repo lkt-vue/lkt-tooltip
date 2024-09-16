@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<{
     referrer: HTMLElement,
     locationY?: 'top' | 'bottom'
 }>(), {
-    open: false,
+    modelValue: false,
     class: '',
     text: '',
     icon: '',
@@ -97,12 +97,35 @@ const adjustStyle = () => {
     let contentEndsAtRight = left + sizerElementWidth;
     let scrollBarWidth = getScrollbarWidth();
 
+    let currentTop = parseFloat(styles.value.top.replaceAll('px', ''));
+
     if (contentEndsAtRight > (window.innerWidth - props.windowMargin - scrollBarWidth)) {
         let diff = contentEndsAtRight - window.innerWidth;
-        styles.value.left = (left - diff - props.windowMargin - scrollBarWidth) + 'px';
+        let newLeft = left - diff - props.windowMargin - scrollBarWidth;
+        if (newLeft < 0) newLeft = props.windowMargin;
+        styles.value.left = (newLeft) + 'px';
 
         if (props.windowMargin) {
             styles.value.right = props.windowMargin + 'px';
+        }
+    }
+
+    if (props.locationY === 'top') {
+        styles.value.top = currentTop - sizerElement.value.offsetHeight;
+    }
+
+
+    let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight;
+
+    if (contentEndsAtBottom > (window.innerHeight - props.windowMargin - scrollBarWidth)) {
+        let diff = contentEndsAtBottom - window.innerHeight;
+
+        let newTop = rect.top - diff - props.windowMargin - scrollBarWidth;
+        if (newTop < 0) newTop = props.windowMargin;
+        styles.value.top = (newTop) + 'px';
+
+        if (props.windowMargin) {
+            styles.value.bottom = props.windowMargin + 'px';
         }
     }
 }
@@ -124,8 +147,12 @@ const calcStyle = () => {
         }
 
         if (props.locationY === 'top') {
-            let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight - props.referrerMargin;
-            _styles.bottom = bottom + 'px';
+            // let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight - props.referrerMargin;
+
+            let bottom = rect.top - props.referrerMargin;
+            // _styles.bottom = bottom + 'px';
+            _styles.top = bottom + 'px';
+            // _styles.bottom = bottom + 'px';
         } else {
             let top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
             _styles.top = top + 'px';

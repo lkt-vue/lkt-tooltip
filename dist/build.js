@@ -8,7 +8,7 @@ const _hoisted_2 = ["innerHTML"];
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "LktTooltip",
   props: {
-    modelValue: { type: Boolean },
+    modelValue: { type: Boolean, default: false },
     class: { default: "" },
     text: { default: "" },
     icon: { default: "" },
@@ -63,11 +63,27 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       const rect = props.referrer.getBoundingClientRect(), left = rect.left, sizerElementWidth = sizerElement.value.offsetWidth;
       let contentEndsAtRight = left + sizerElementWidth;
       let scrollBarWidth = getScrollbarWidth();
+      let currentTop = parseFloat(styles.value.top.replaceAll("px", ""));
       if (contentEndsAtRight > window.innerWidth - props.windowMargin - scrollBarWidth) {
         let diff = contentEndsAtRight - window.innerWidth;
-        styles.value.left = left - diff - props.windowMargin - scrollBarWidth + "px";
+        let newLeft = left - diff - props.windowMargin - scrollBarWidth;
+        if (newLeft < 0) newLeft = props.windowMargin;
+        styles.value.left = newLeft + "px";
         if (props.windowMargin) {
           styles.value.right = props.windowMargin + "px";
+        }
+      }
+      if (props.locationY === "top") {
+        styles.value.top = currentTop - sizerElement.value.offsetHeight;
+      }
+      let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight;
+      if (contentEndsAtBottom > window.innerHeight - props.windowMargin - scrollBarWidth) {
+        let diff = contentEndsAtBottom - window.innerHeight;
+        let newTop = rect.top - diff - props.windowMargin - scrollBarWidth;
+        if (newTop < 0) newTop = props.windowMargin;
+        styles.value.top = newTop + "px";
+        if (props.windowMargin) {
+          styles.value.bottom = props.windowMargin + "px";
         }
       }
     };
@@ -84,8 +100,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         _styles.width = props.referrer.offsetWidth + "px";
       }
       if (props.locationY === "top") {
-        let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight - props.referrerMargin;
-        _styles.bottom = bottom + "px";
+        let bottom = rect.top - props.referrerMargin;
+        _styles.top = bottom + "px";
       } else {
         let top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
         _styles.top = top + "px";
