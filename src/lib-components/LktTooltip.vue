@@ -19,7 +19,8 @@ const props = withDefaults(defineProps<{
     windowMargin?: number
     referrerWidth?: boolean,
     referrer: HTMLElement,
-    locationY?: 'top' | 'bottom'
+    locationY?: 'top' | 'bottom' | 'center' | 'referrer-center'
+    locationX?: 'left' | 'right' | 'center' | 'left-corner' | 'right-corner'
 }>(), {
     modelValue: false,
     class: '',
@@ -28,12 +29,14 @@ const props = withDefaults(defineProps<{
     iconAtEnd: false,
     referrerWidth: false,
     locationY: 'bottom',
+    locationX: 'left-corner',
     referrerMargin: 0,
     windowMargin: 0,
 });
 
 const styles = ref({}),
     isOpen = ref(props.modelValue),
+    contentInnerObserver = ref(null),
     sizerElement = ref(null);
 
 const computedClassName = computed(() => {
@@ -91,31 +94,37 @@ const getScrollbarWidth = () => {
 const adjustStyle = () => {
 
     const rect = props.referrer.getBoundingClientRect(),
-        left = rect.left,
         sizerElementWidth = sizerElement.value.offsetWidth;
 
-    let contentEndsAtRight = left + sizerElementWidth;
     let scrollBarWidth = getScrollbarWidth();
+    let contentEndsAtRight = rect.left + sizerElementWidth + scrollBarWidth;
 
-    let currentTop = parseFloat(styles.value.top.replaceAll('px', ''));
+    let currentTop = styles.value.top ? parseFloat(styles.value.top.replaceAll('px', '')) : rect.top;
 
     if (contentEndsAtRight > (window.innerWidth - props.windowMargin - scrollBarWidth)) {
         let diff = contentEndsAtRight - window.innerWidth;
-        let newLeft = left - diff - props.windowMargin - scrollBarWidth;
+        let newLeft = rect.left - diff - props.windowMargin - scrollBarWidth;
         if (newLeft < 0) newLeft = props.windowMargin;
         styles.value.left = (newLeft) + 'px';
 
         if (props.windowMargin) {
             styles.value.right = props.windowMargin + 'px';
+        } else {
+            styles.value.right = '0px';
         }
+    } else {
+        styles.value.right = 'initial';
     }
 
     if (props.locationY === 'top') {
         styles.value.top = currentTop - sizerElement.value.offsetHeight;
     }
+    else if (props.locationY === 'center') {
+        styles.value.top = rect.top - (sizerElement.value.offsetHeight / 2) + (props.referrer.offsetHeight / 2);
+    }
 
 
-    let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight;
+    let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight + scrollBarWidth;
 
     if (contentEndsAtBottom > (window.innerHeight - props.windowMargin - scrollBarWidth)) {
         let diff = contentEndsAtBottom - window.innerHeight;
@@ -126,20 +135,22 @@ const adjustStyle = () => {
 
         if (props.windowMargin) {
             styles.value.bottom = props.windowMargin + 'px';
+        } else {
+            styles.value.bottom = '0px';
         }
+    } else {
+        styles.value.bottom = 'initial';
     }
 }
 
 const calcStyle = () => {
         if (!props.referrer) return;
-        const rect = props.referrer.getBoundingClientRect(),
-            left = rect.left;
+        const rect = props.referrer.getBoundingClientRect();
 
         let _styles = {
             position: 'fixed',
             transform: 'fixed',
             transition: 'fixed',
-            left: left + 'px',
         }
 
         if (props.referrerWidth) {
@@ -147,15 +158,24 @@ const calcStyle = () => {
         }
 
         if (props.locationY === 'top') {
-            // let bottom = window.outerHeight - rect.bottom - props.referrer.offsetHeight - props.referrerMargin;
-
             let bottom = rect.top - props.referrerMargin;
-            // _styles.bottom = bottom + 'px';
             _styles.top = bottom + 'px';
-            // _styles.bottom = bottom + 'px';
-        } else {
+
+        } else if (props.locationY === 'bottom') {
             let top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
             _styles.top = top + 'px';
+
+        } else if (props.locationY === 'referrer-center') {
+            let top = rect.top + (props.referrer.offsetHeight / 2) + props.referrerMargin;
+            _styles.top = top + 'px';
+        }
+
+        if (props.locationX === 'left-corner') {
+            _styles.left = rect.left + 'px';
+
+        } else if (props.locationX === 'right') {
+            let left = rect.left + props.referrer.offsetWidth + props.referrerMargin;
+            _styles.left = left + 'px';
         }
 
         styles.value = _styles;
@@ -178,10 +198,18 @@ watch(isOpen, v => {
     emit('update:modelValue', v);
 });
 
+const onScrollEvent = () => {
+    // calcStyle();
+
+    setTimeout(() => {
+        calcStyle();
+    }, 1);
+}
+
 
 onMounted(() => {
     window.addEventListener('click', onClickOutside);
-    window.addEventListener('scroll', calcStyle);
+    window.addEventListener('scroll', onScrollEvent);
     window.addEventListener('resize', calcStyle);
 
     if (props.referrer) {
@@ -194,11 +222,25 @@ onMounted(() => {
     if (isOpen.value) {
         calcStyle();
     }
+
+    nextTick(() => {
+        const observer = new MutationObserver(() => {
+            setTimeout(() => {
+                calcStyle()
+            }, 1);
+        });
+        observer.observe(sizerElement.value, {
+            childList: true,
+            subtree: true,
+            attributes: false,
+        });
+        contentInnerObserver.value = observer;
+    })
 })
 
 onBeforeUnmount(() => {
     window.removeEventListener('click', onClickOutside);
-    window.removeEventListener('scroll', calcStyle);
+    window.removeEventListener('scroll', onScrollEvent);
     window.removeEventListener('resize', calcStyle);
 
     if (props.referrer) {
@@ -207,6 +249,8 @@ onBeforeUnmount(() => {
             modalScroller.removeEventListener('scroll', calcStyle);
         }
     }
+
+    contentInnerObserver.value.disconnect();
 })
 
 </script>

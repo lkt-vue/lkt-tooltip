@@ -1,4 +1,4 @@
-import { defineComponent, useSlots, ref, computed, watch, onMounted, onBeforeUnmount, withDirectives, openBlock, createElementBlock, normalizeClass, normalizeStyle, unref, renderSlot, vShow, nextTick } from "vue";
+import { defineComponent, useSlots, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, withDirectives, openBlock, createElementBlock, normalizeClass, normalizeStyle, unref, renderSlot, vShow } from "vue";
 import { __ } from "lkt-i18n";
 const _hoisted_1 = {
   key: 0,
@@ -17,14 +17,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     windowMargin: { default: 0 },
     referrerWidth: { type: Boolean, default: false },
     referrer: {},
-    locationY: { default: "bottom" }
+    locationY: { default: "bottom" },
+    locationX: { default: "left-corner" }
   },
   emits: ["update:modelValue"],
   setup(__props, { emit: __emit }) {
     const emit = __emit;
     const slots = useSlots();
     const props = __props;
-    const styles = ref({}), isOpen = ref(props.modelValue), sizerElement = ref(null);
+    const styles = ref({}), isOpen = ref(props.modelValue), contentInnerObserver = ref(null), sizerElement = ref(null);
     const computedClassName = computed(() => {
       return props.class;
     }), computedText = computed(() => {
@@ -60,23 +61,29 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return scrollbarWidth;
     };
     const adjustStyle = () => {
-      const rect = props.referrer.getBoundingClientRect(), left = rect.left, sizerElementWidth = sizerElement.value.offsetWidth;
-      let contentEndsAtRight = left + sizerElementWidth;
+      const rect = props.referrer.getBoundingClientRect(), sizerElementWidth = sizerElement.value.offsetWidth;
       let scrollBarWidth = getScrollbarWidth();
-      let currentTop = parseFloat(styles.value.top.replaceAll("px", ""));
+      let contentEndsAtRight = rect.left + sizerElementWidth + scrollBarWidth;
+      let currentTop = styles.value.top ? parseFloat(styles.value.top.replaceAll("px", "")) : rect.top;
       if (contentEndsAtRight > window.innerWidth - props.windowMargin - scrollBarWidth) {
         let diff = contentEndsAtRight - window.innerWidth;
-        let newLeft = left - diff - props.windowMargin - scrollBarWidth;
+        let newLeft = rect.left - diff - props.windowMargin - scrollBarWidth;
         if (newLeft < 0) newLeft = props.windowMargin;
         styles.value.left = newLeft + "px";
         if (props.windowMargin) {
           styles.value.right = props.windowMargin + "px";
+        } else {
+          styles.value.right = "0px";
         }
+      } else {
+        styles.value.right = "initial";
       }
       if (props.locationY === "top") {
         styles.value.top = currentTop - sizerElement.value.offsetHeight;
+      } else if (props.locationY === "center") {
+        styles.value.top = rect.top - sizerElement.value.offsetHeight / 2 + props.referrer.offsetHeight / 2;
       }
-      let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight;
+      let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight + scrollBarWidth;
       if (contentEndsAtBottom > window.innerHeight - props.windowMargin - scrollBarWidth) {
         let diff = contentEndsAtBottom - window.innerHeight;
         let newTop = rect.top - diff - props.windowMargin - scrollBarWidth;
@@ -84,17 +91,20 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         styles.value.top = newTop + "px";
         if (props.windowMargin) {
           styles.value.bottom = props.windowMargin + "px";
+        } else {
+          styles.value.bottom = "0px";
         }
+      } else {
+        styles.value.bottom = "initial";
       }
     };
     const calcStyle = () => {
       if (!props.referrer) return;
-      const rect = props.referrer.getBoundingClientRect(), left = rect.left;
+      const rect = props.referrer.getBoundingClientRect();
       let _styles = {
         position: "fixed",
         transform: "fixed",
-        transition: "fixed",
-        left: left + "px"
+        transition: "fixed"
       };
       if (props.referrerWidth) {
         _styles.width = props.referrer.offsetWidth + "px";
@@ -102,9 +112,18 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       if (props.locationY === "top") {
         let bottom = rect.top - props.referrerMargin;
         _styles.top = bottom + "px";
-      } else {
+      } else if (props.locationY === "bottom") {
         let top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
         _styles.top = top + "px";
+      } else if (props.locationY === "referrer-center") {
+        let top = rect.top + props.referrer.offsetHeight / 2 + props.referrerMargin;
+        _styles.top = top + "px";
+      }
+      if (props.locationX === "left-corner") {
+        _styles.left = rect.left + "px";
+      } else if (props.locationX === "right") {
+        let left = rect.left + props.referrer.offsetWidth + props.referrerMargin;
+        _styles.left = left + "px";
       }
       styles.value = _styles;
       nextTick(() => {
@@ -121,9 +140,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       if (v) calcStyle();
       emit("update:modelValue", v);
     });
+    const onScrollEvent = () => {
+      setTimeout(() => {
+        calcStyle();
+      }, 1);
+    };
     onMounted(() => {
       window.addEventListener("click", onClickOutside);
-      window.addEventListener("scroll", calcStyle);
+      window.addEventListener("scroll", onScrollEvent);
       window.addEventListener("resize", calcStyle);
       if (props.referrer) {
         let modalScroller = props.referrer.closest(".lkt-modal");
@@ -134,10 +158,23 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       if (isOpen.value) {
         calcStyle();
       }
+      nextTick(() => {
+        const observer = new MutationObserver(() => {
+          setTimeout(() => {
+            calcStyle();
+          }, 1);
+        });
+        observer.observe(sizerElement.value, {
+          childList: true,
+          subtree: true,
+          attributes: false
+        });
+        contentInnerObserver.value = observer;
+      });
     });
     onBeforeUnmount(() => {
       window.removeEventListener("click", onClickOutside);
-      window.removeEventListener("scroll", calcStyle);
+      window.removeEventListener("scroll", onScrollEvent);
       window.removeEventListener("resize", calcStyle);
       if (props.referrer) {
         let modalScroller = props.referrer.closest(".lkt-modal");
@@ -145,6 +182,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           modalScroller.removeEventListener("scroll", calcStyle);
         }
       }
+      contentInnerObserver.value.disconnect();
     });
     return (_ctx, _cache) => {
       return withDirectives((openBlock(), createElementBlock("div", {
