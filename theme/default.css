@@ -17,4 +17,5 @@
     --lkt-tooltip-border-color: #ffffff;
     --lkt-tooltip-border-color-hover: #ffffff;
     --lkt-tooltip-transition: all linear 300ms;
+    --lkt-tooltip-shadow: 0 0 8px #0006;
 }

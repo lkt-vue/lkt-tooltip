@@ -17,6 +17,7 @@
     color: var(--lkt-tooltip-color);
     text-align: var(--lkt-tooltip-text-align);
     transition: var(--lkt-tooltip-transition);
+    box-shadow: var(--lkt-tooltip-shadow);
     z-index: 200;
 }
 
