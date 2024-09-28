@@ -93,6 +93,8 @@ const getScrollbarWidth = () => {
 
 const adjustStyle = () => {
 
+    if (!sizerElement.value) return;
+
     const rect = props.referrer.getBoundingClientRect(),
         sizerElementWidth = sizerElement.value.offsetWidth;
 

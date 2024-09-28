@@ -61,6 +61,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       return scrollbarWidth;
     };
     const adjustStyle = () => {
+      if (!sizerElement.value) return;
       const rect = props.referrer.getBoundingClientRect(), sizerElementWidth = sizerElement.value.offsetWidth;
       let scrollBarWidth = getScrollbarWidth();
       let contentEndsAtRight = rect.left + sizerElementWidth + scrollBarWidth;
