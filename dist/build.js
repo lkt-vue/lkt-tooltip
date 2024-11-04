@@ -9,6 +9,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "LktTooltip",
   props: {
     modelValue: { type: Boolean, default: false },
+    alwaysOpen: { type: Boolean, default: false },
     class: { default: "" },
     text: { default: "" },
     icon: { default: "" },
@@ -131,6 +132,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         adjustStyle();
       });
     }, onClickOutside = (e) => {
+      if (props.alwaysOpen) return;
       if (isOpen.value && !(sizerElement.value.contains(e.target) || props.referrer.contains(e.target))) {
         doClose();
         return;

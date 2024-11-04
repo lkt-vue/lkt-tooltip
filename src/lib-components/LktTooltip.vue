@@ -10,6 +10,7 @@ const slots = useSlots();
 
 const props = withDefaults(defineProps<{
     modelValue?: boolean
+    alwaysOpen?: boolean
     class?: string,
     text?: string,
     icon?: string,
@@ -23,6 +24,7 @@ const props = withDefaults(defineProps<{
     locationX?: 'left' | 'right' | 'center' | 'left-corner' | 'right-corner'
 }>(), {
     modelValue: false,
+    alwaysOpen: false,
     class: '',
     text: '',
     icon: '',
@@ -187,6 +189,8 @@ const calcStyle = () => {
         })
     },
     onClickOutside = (e: PointerEvent) => {
+        if (props.alwaysOpen) return;
+
         //@ts-ignore
         if (isOpen.value && !(sizerElement.value.contains(e.target) || props.referrer.contains(e.target))) {
             doClose();
