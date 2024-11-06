@@ -204,12 +204,12 @@ watch(isOpen, v => {
     emit('update:modelValue', v);
 });
 
-const onScrollEvent = () => {
-    // calcStyle();
+let scrollTimeout = undefined;
 
-    setTimeout(() => {
-        calcStyle();
-    }, 1);
+const onScrollEvent = () => {
+    clearTimeout(scrollTimeout);
+
+    scrollTimeout = setTimeout(() => calcStyle(), 1);
 }
 
 

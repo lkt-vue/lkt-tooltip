@@ -143,10 +143,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       if (v) calcStyle();
       emit("update:modelValue", v);
     });
+    let scrollTimeout = void 0;
     const onScrollEvent = () => {
-      setTimeout(() => {
-        calcStyle();
-      }, 1);
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => calcStyle(), 1);
     };
     onMounted(() => {
       window.addEventListener("click", onClickOutside);
