@@ -1,5 +1,29 @@
-import { defineComponent, useSlots, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, withDirectives, openBlock, createElementBlock, normalizeClass, normalizeStyle, unref, renderSlot, vShow } from "vue";
+import { defineComponent, useSlots, ref, computed, watch, nextTick, onMounted, onBeforeUnmount, withDirectives, openBlock, createElementBlock, normalizeStyle, normalizeClass, unref, renderSlot, vShow } from "vue";
 import { __ } from "lkt-i18n";
+class PositionInstance {
+  constructor(data) {
+    this.top = void 0;
+    this.bottom = void 0;
+    this.left = void 0;
+    this.right = void 0;
+    this.width = void 0;
+    this.position = "";
+    for (let k in data) this[k] = data[k];
+  }
+  assign(data) {
+    for (let k in data) this[k] = data[k];
+  }
+  getStyles() {
+    let r = {};
+    if (this.position) r.position = this.position;
+    if (this.top) r.top = this.top + "px";
+    if (this.bottom) r.bottom = this.bottom + "px";
+    if (this.left) r.left = this.left + "px";
+    if (this.right) r.right = this.right + "px";
+    if (this.width) r.width = this.width + "px";
+    return r;
+  }
+}
 const _hoisted_1 = {
   key: 0,
   class: "lkt-tooltip-content"
@@ -26,7 +50,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const emit = __emit;
     const slots = useSlots();
     const props = __props;
-    const styles = ref({}), isOpen = ref(props.modelValue), contentInnerObserver = ref(null), sizerElement = ref(null);
+    const styles = ref(new PositionInstance({
+      position: "fixed"
+    })), isOpen = ref(props.modelValue), contentInnerObserver = ref(null), sizerElement = ref(null);
     const computedClassName = computed(() => {
       return props.class;
     }), computedText = computed(() => {
@@ -45,6 +71,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }
       }
       return text;
+    }), computedStyles = computed(() => {
+      return styles.value.getStyles();
     });
     const doClose = () => {
       isOpen.value = false;
@@ -66,19 +94,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       const rect = props.referrer.getBoundingClientRect(), sizerElementWidth = sizerElement.value.offsetWidth;
       let scrollBarWidth = getScrollbarWidth();
       let contentEndsAtRight = rect.left + sizerElementWidth + scrollBarWidth;
-      let currentTop = styles.value.top ? parseFloat(styles.value.top.replaceAll("px", "")) : rect.top;
+      let currentTop = styles.value.top ? styles.value.top : rect.top;
       if (contentEndsAtRight > window.innerWidth - props.windowMargin - scrollBarWidth) {
         let diff = contentEndsAtRight - window.innerWidth;
         let newLeft = rect.left - diff - props.windowMargin - scrollBarWidth;
         if (newLeft < 0) newLeft = props.windowMargin;
-        styles.value.left = newLeft + "px";
+        styles.value.left = newLeft;
         if (props.windowMargin) {
-          styles.value.right = props.windowMargin + "px";
+          styles.value.right = props.windowMargin;
         } else {
-          styles.value.right = "0px";
+          styles.value.right = 0;
         }
       } else {
-        styles.value.right = "initial";
+        styles.value.right = void 0;
       }
       if (props.locationY === "top") {
         styles.value.top = currentTop - sizerElement.value.offsetHeight;
@@ -90,44 +118,34 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         let diff = contentEndsAtBottom - window.innerHeight;
         let newTop = rect.top - diff - props.windowMargin - scrollBarWidth;
         if (newTop < 0) newTop = props.windowMargin;
-        styles.value.top = newTop + "px";
+        styles.value.top = newTop;
         if (props.windowMargin) {
-          styles.value.bottom = props.windowMargin + "px";
+          styles.value.bottom = props.windowMargin;
         } else {
-          styles.value.bottom = "0px";
+          styles.value.bottom = 0;
         }
       } else {
-        styles.value.bottom = "initial";
+        styles.value.bottom = void 0;
       }
     };
     const calcStyle = () => {
       if (!props.referrer) return;
       const rect = props.referrer.getBoundingClientRect();
-      let _styles = {
-        position: "fixed",
-        transform: "fixed",
-        transition: "fixed"
-      };
       if (props.referrerWidth) {
-        _styles.width = props.referrer.offsetWidth + "px";
+        styles.value.width = props.referrer.offsetWidth;
       }
       if (props.locationY === "top") {
-        let bottom = rect.top - props.referrerMargin;
-        _styles.top = bottom + "px";
+        styles.value.top = rect.top - props.referrerMargin;
       } else if (props.locationY === "bottom") {
-        let top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
-        _styles.top = top + "px";
+        styles.value.top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
       } else if (props.locationY === "referrer-center") {
-        let top = rect.top + props.referrer.offsetHeight / 2 + props.referrerMargin;
-        _styles.top = top + "px";
+        styles.value.top = rect.top + props.referrer.offsetHeight / 2 + props.referrerMargin;
       }
       if (props.locationX === "left-corner") {
-        _styles.left = rect.left + "px";
+        styles.value.left = rect.left;
       } else if (props.locationX === "right") {
-        let left = rect.left + props.referrer.offsetWidth + props.referrerMargin;
-        _styles.left = left + "px";
+        styles.value.left = rect.left + props.referrer.offsetWidth + props.referrerMargin;
       }
-      styles.value = _styles;
       nextTick(() => {
         adjustStyle();
       });
@@ -192,7 +210,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         ref_key: "sizerElement",
         ref: sizerElement,
         class: normalizeClass(["lkt-tooltip", computedClassName.value]),
-        style: normalizeStyle(styles.value)
+        style: normalizeStyle(computedStyles.value)
       }, [
         unref(slots).default ? (openBlock(), createElementBlock("div", _hoisted_1, [
           renderSlot(_ctx.$slots, "default", { doClose })

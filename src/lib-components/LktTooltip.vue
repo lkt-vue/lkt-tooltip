@@ -3,6 +3,7 @@
 // Props
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch} from "vue";
 import {__} from "lkt-i18n";
+import {PositionInstance} from "../instances/PositionInstance";
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -36,10 +37,12 @@ const props = withDefaults(defineProps<{
     windowMargin: 0,
 });
 
-const styles = ref({}),
+const styles = ref(new PositionInstance({
+        position: 'fixed',
+    })),
     isOpen = ref(props.modelValue),
     contentInnerObserver = ref(null),
-    sizerElement = ref(null);
+    sizerElement = ref(<HTMLElement|null>null);
 
 const computedClassName = computed(() => {
         return props.class;
@@ -63,6 +66,9 @@ const computedClassName = computed(() => {
         }
 
         return text;
+    }),
+    computedStyles = computed(() => {
+        return styles.value.getStyles();
     });
 
 const doClose = () => {
@@ -103,21 +109,21 @@ const adjustStyle = () => {
     let scrollBarWidth = getScrollbarWidth();
     let contentEndsAtRight = rect.left + sizerElementWidth + scrollBarWidth;
 
-    let currentTop = styles.value.top ? parseFloat(styles.value.top.replaceAll('px', '')) : rect.top;
+    let currentTop = styles.value.top ? styles.value.top : rect.top;
 
     if (contentEndsAtRight > (window.innerWidth - props.windowMargin - scrollBarWidth)) {
         let diff = contentEndsAtRight - window.innerWidth;
         let newLeft = rect.left - diff - props.windowMargin - scrollBarWidth;
         if (newLeft < 0) newLeft = props.windowMargin;
-        styles.value.left = (newLeft) + 'px';
+        styles.value.left = newLeft;
 
         if (props.windowMargin) {
-            styles.value.right = props.windowMargin + 'px';
+            styles.value.right = props.windowMargin;
         } else {
-            styles.value.right = '0px';
+            styles.value.right = 0;
         }
     } else {
-        styles.value.right = 'initial';
+        styles.value.right = undefined;
     }
 
     if (props.locationY === 'top') {
@@ -135,15 +141,15 @@ const adjustStyle = () => {
 
         let newTop = rect.top - diff - props.windowMargin - scrollBarWidth;
         if (newTop < 0) newTop = props.windowMargin;
-        styles.value.top = (newTop) + 'px';
+        styles.value.top = newTop;
 
         if (props.windowMargin) {
-            styles.value.bottom = props.windowMargin + 'px';
+            styles.value.bottom = props.windowMargin;
         } else {
-            styles.value.bottom = '0px';
+            styles.value.bottom = 0;
         }
     } else {
-        styles.value.bottom = 'initial';
+        styles.value.bottom = undefined;
     }
 }
 
@@ -151,38 +157,26 @@ const calcStyle = () => {
         if (!props.referrer) return;
         const rect = props.referrer.getBoundingClientRect();
 
-        let _styles = {
-            position: 'fixed',
-            transform: 'fixed',
-            transition: 'fixed',
-        }
-
         if (props.referrerWidth) {
-            _styles.width = props.referrer.offsetWidth + 'px';
+            styles.value.width = props.referrer.offsetWidth;
         }
 
         if (props.locationY === 'top') {
-            let bottom = rect.top - props.referrerMargin;
-            _styles.top = bottom + 'px';
+            styles.value.top = rect.top - props.referrerMargin;
 
         } else if (props.locationY === 'bottom') {
-            let top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
-            _styles.top = top + 'px';
+            styles.value.top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
 
         } else if (props.locationY === 'referrer-center') {
-            let top = rect.top + (props.referrer.offsetHeight / 2) + props.referrerMargin;
-            _styles.top = top + 'px';
+            styles.value.top = rect.top + (props.referrer.offsetHeight / 2) + props.referrerMargin;
         }
 
         if (props.locationX === 'left-corner') {
-            _styles.left = rect.left + 'px';
+            styles.value.left = rect.left;
 
         } else if (props.locationX === 'right') {
-            let left = rect.left + props.referrer.offsetWidth + props.referrerMargin;
-            _styles.left = left + 'px';
+            styles.value.left = rect.left + props.referrer.offsetWidth + props.referrerMargin;
         }
-
-        styles.value = _styles;
 
         nextTick(() => {
             adjustStyle();
@@ -267,7 +261,7 @@ onBeforeUnmount(() => {
         ref="sizerElement"
         class="lkt-tooltip"
         :class="computedClassName"
-        :style="styles">
+        :style="computedStyles">
         <template v-if="slots.default">
             <div class="lkt-tooltip-content">
                 <slot name="default" :do-close="doClose"/>
