@@ -4,6 +4,8 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch} from "vue";
 import {__} from "lkt-i18n";
 import {PositionInstance} from "../instances/PositionInstance";
+import {PositionEngine} from "../enum/PositionEngine";
+import {getAbsoluteEnginePosition} from "../functions/positioning-functions";
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -16,9 +18,10 @@ const props = withDefaults(defineProps<{
     text?: string,
     icon?: string,
     iconAtEnd?: boolean,
+    engine?: PositionEngine,
 
-    referrerMargin?: number
-    windowMargin?: number
+    referrerMargin?: number|string
+    windowMargin?: number|string
     referrerWidth?: boolean,
     referrer: HTMLElement,
     locationY?: 'top' | 'bottom' | 'center' | 'referrer-center'
@@ -30,6 +33,7 @@ const props = withDefaults(defineProps<{
     text: '',
     icon: '',
     iconAtEnd: false,
+    engine: PositionEngine.Fixed,
     referrerWidth: false,
     locationY: 'bottom',
     locationX: 'left-corner',
@@ -37,11 +41,14 @@ const props = withDefaults(defineProps<{
     windowMargin: 0,
 });
 
+const calculatedReferrerMargin = typeof props.referrerMargin === 'string' ? parseFloat(props.referrerMargin) : props.referrerMargin;
+const calculatedWindowMargin = typeof props.windowMargin === 'string' ? parseFloat(props.windowMargin) : props.windowMargin;
+
 const styles = ref(new PositionInstance({
         position: 'fixed',
     })),
     isOpen = ref(props.modelValue),
-    contentInnerObserver = ref(null),
+    contentInnerObserver = ref(<MutationObserver|null>null),
     sizerElement = ref(<HTMLElement|null>null);
 
 const computedClassName = computed(() => {
@@ -111,14 +118,14 @@ const adjustStyle = () => {
 
     let currentTop = styles.value.top ? styles.value.top : rect.top;
 
-    if (contentEndsAtRight > (window.innerWidth - props.windowMargin - scrollBarWidth)) {
+    if (contentEndsAtRight > (window.innerWidth - calculatedWindowMargin - scrollBarWidth)) {
         let diff = contentEndsAtRight - window.innerWidth;
-        let newLeft = rect.left - diff - props.windowMargin - scrollBarWidth;
-        if (newLeft < 0) newLeft = props.windowMargin;
+        let newLeft = rect.left - diff - calculatedWindowMargin - scrollBarWidth;
+        if (newLeft < 0) newLeft = calculatedWindowMargin;
         styles.value.left = newLeft;
 
-        if (props.windowMargin) {
-            styles.value.right = props.windowMargin;
+        if (calculatedWindowMargin) {
+            styles.value.right = calculatedWindowMargin;
         } else {
             styles.value.right = 0;
         }
@@ -136,15 +143,15 @@ const adjustStyle = () => {
 
     let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight + scrollBarWidth;
 
-    if (contentEndsAtBottom > (window.innerHeight - props.windowMargin - scrollBarWidth)) {
+    if (contentEndsAtBottom > (window.innerHeight - calculatedWindowMargin - scrollBarWidth)) {
         let diff = contentEndsAtBottom - window.innerHeight;
 
-        let newTop = rect.top - diff - props.windowMargin - scrollBarWidth;
-        if (newTop < 0) newTop = props.windowMargin;
+        let newTop = rect.top - diff - calculatedWindowMargin - scrollBarWidth;
+        if (newTop < 0) newTop = calculatedWindowMargin;
         styles.value.top = newTop;
 
-        if (props.windowMargin) {
-            styles.value.bottom = props.windowMargin;
+        if (calculatedWindowMargin) {
+            styles.value.bottom = calculatedWindowMargin;
         } else {
             styles.value.bottom = 0;
         }
@@ -154,6 +161,17 @@ const adjustStyle = () => {
 }
 
 const calcStyle = () => {
+    if (props.engine === PositionEngine.Absolute) {
+        styles.value.assign(getAbsoluteEnginePosition(
+            props.referrer,
+            calculatedReferrerMargin,
+            props.referrerWidth,
+            props.locationX,
+            props.locationY,
+        ))
+        return;
+    }
+
         if (!props.referrer) return;
         const rect = props.referrer.getBoundingClientRect();
 
@@ -162,20 +180,20 @@ const calcStyle = () => {
         }
 
         if (props.locationY === 'top') {
-            styles.value.top = rect.top - props.referrerMargin;
+            styles.value.top = rect.top - calculatedReferrerMargin;
 
         } else if (props.locationY === 'bottom') {
-            styles.value.top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
+            styles.value.top = rect.top + props.referrer.offsetHeight + calculatedReferrerMargin;
 
         } else if (props.locationY === 'referrer-center') {
-            styles.value.top = rect.top + (props.referrer.offsetHeight / 2) + props.referrerMargin;
+            styles.value.top = rect.top + (props.referrer.offsetHeight / 2) + calculatedReferrerMargin;
         }
 
         if (props.locationX === 'left-corner') {
             styles.value.left = rect.left;
 
         } else if (props.locationX === 'right') {
-            styles.value.left = rect.left + props.referrer.offsetWidth + props.referrerMargin;
+            styles.value.left = rect.left + props.referrer.offsetWidth + calculatedReferrerMargin;
         }
 
         nextTick(() => {

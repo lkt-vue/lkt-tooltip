@@ -24,6 +24,34 @@ class PositionInstance {
     return r;
   }
 }
+var PositionEngine = /* @__PURE__ */ ((PositionEngine2) => {
+  PositionEngine2["Fixed"] = "fixed";
+  PositionEngine2["Absolute"] = "absolute";
+  return PositionEngine2;
+})(PositionEngine || {});
+const getAbsoluteEnginePosition = (referrer, referrerMargin, referrerWidth, locationX, locationY) => {
+  if (!referrer) return {};
+  let r = new PositionInstance({
+    position: "absolute"
+  });
+  referrer.getBoundingClientRect();
+  if (referrerWidth) {
+    r.width = referrer.offsetWidth;
+  }
+  if (locationY === "top") {
+    r.top = 0 - referrerMargin;
+  } else if (locationY === "bottom") {
+    r.top = referrer.offsetHeight + referrerMargin;
+  } else if (locationY === "referrer-center") {
+    r.top = referrer.offsetHeight / 2 + referrerMargin;
+  }
+  if (locationX === "left-corner") {
+    r.left = 0;
+  } else if (locationX === "right") {
+    r.left = referrer.offsetWidth + referrerMargin;
+  }
+  return r;
+};
 const _hoisted_1 = {
   key: 0,
   class: "lkt-tooltip-content"
@@ -38,6 +66,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     text: { default: "" },
     icon: { default: "" },
     iconAtEnd: { type: Boolean, default: false },
+    engine: { default: PositionEngine.Fixed },
     referrerMargin: { default: 0 },
     windowMargin: { default: 0 },
     referrerWidth: { type: Boolean, default: false },
@@ -50,6 +79,8 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const emit = __emit;
     const slots = useSlots();
     const props = __props;
+    const calculatedReferrerMargin = typeof props.referrerMargin === "string" ? parseFloat(props.referrerMargin) : props.referrerMargin;
+    const calculatedWindowMargin = typeof props.windowMargin === "string" ? parseFloat(props.windowMargin) : props.windowMargin;
     const styles = ref(new PositionInstance({
       position: "fixed"
     })), isOpen = ref(props.modelValue), contentInnerObserver = ref(null), sizerElement = ref(null);
@@ -95,13 +126,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       let scrollBarWidth = getScrollbarWidth();
       let contentEndsAtRight = rect.left + sizerElementWidth + scrollBarWidth;
       let currentTop = styles.value.top ? styles.value.top : rect.top;
-      if (contentEndsAtRight > window.innerWidth - props.windowMargin - scrollBarWidth) {
+      if (contentEndsAtRight > window.innerWidth - calculatedWindowMargin - scrollBarWidth) {
         let diff = contentEndsAtRight - window.innerWidth;
-        let newLeft = rect.left - diff - props.windowMargin - scrollBarWidth;
-        if (newLeft < 0) newLeft = props.windowMargin;
+        let newLeft = rect.left - diff - calculatedWindowMargin - scrollBarWidth;
+        if (newLeft < 0) newLeft = calculatedWindowMargin;
         styles.value.left = newLeft;
-        if (props.windowMargin) {
-          styles.value.right = props.windowMargin;
+        if (calculatedWindowMargin) {
+          styles.value.right = calculatedWindowMargin;
         } else {
           styles.value.right = 0;
         }
@@ -114,13 +145,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         styles.value.top = rect.top - sizerElement.value.offsetHeight / 2 + props.referrer.offsetHeight / 2;
       }
       let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight + scrollBarWidth;
-      if (contentEndsAtBottom > window.innerHeight - props.windowMargin - scrollBarWidth) {
+      if (contentEndsAtBottom > window.innerHeight - calculatedWindowMargin - scrollBarWidth) {
         let diff = contentEndsAtBottom - window.innerHeight;
-        let newTop = rect.top - diff - props.windowMargin - scrollBarWidth;
-        if (newTop < 0) newTop = props.windowMargin;
+        let newTop = rect.top - diff - calculatedWindowMargin - scrollBarWidth;
+        if (newTop < 0) newTop = calculatedWindowMargin;
         styles.value.top = newTop;
-        if (props.windowMargin) {
-          styles.value.bottom = props.windowMargin;
+        if (calculatedWindowMargin) {
+          styles.value.bottom = calculatedWindowMargin;
         } else {
           styles.value.bottom = 0;
         }
@@ -129,22 +160,32 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       }
     };
     const calcStyle = () => {
+      if (props.engine === PositionEngine.Absolute) {
+        styles.value.assign(getAbsoluteEnginePosition(
+          props.referrer,
+          calculatedReferrerMargin,
+          props.referrerWidth,
+          props.locationX,
+          props.locationY
+        ));
+        return;
+      }
       if (!props.referrer) return;
       const rect = props.referrer.getBoundingClientRect();
       if (props.referrerWidth) {
         styles.value.width = props.referrer.offsetWidth;
       }
       if (props.locationY === "top") {
-        styles.value.top = rect.top - props.referrerMargin;
+        styles.value.top = rect.top - calculatedReferrerMargin;
       } else if (props.locationY === "bottom") {
-        styles.value.top = rect.top + props.referrer.offsetHeight + props.referrerMargin;
+        styles.value.top = rect.top + props.referrer.offsetHeight + calculatedReferrerMargin;
       } else if (props.locationY === "referrer-center") {
-        styles.value.top = rect.top + props.referrer.offsetHeight / 2 + props.referrerMargin;
+        styles.value.top = rect.top + props.referrer.offsetHeight / 2 + calculatedReferrerMargin;
       }
       if (props.locationX === "left-corner") {
         styles.value.left = rect.left;
       } else if (props.locationX === "right") {
-        styles.value.left = rect.left + props.referrer.offsetWidth + props.referrerMargin;
+        styles.value.left = rect.left + props.referrer.offsetWidth + calculatedReferrerMargin;
       }
       nextTick(() => {
         adjustStyle();

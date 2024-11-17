@@ -7,14 +7,14 @@ export class PositionInstance {
     left?: number = undefined;
     right?: number = undefined;
     width?: number = undefined;
-    position?: 'fixed' | '' = '';
+    position?: 'fixed' | 'absolute' | '' = '';
 
     constructor(data: LktObject) {
         //@ts-ignore
         for (let k in data) this[k] = data[k];
     }
 
-    assign(data: LktObject) {
+    assign(data: LktObject|PositionInstance) {
         //@ts-ignore
         for (let k in data) this[k] = data[k];
     }
