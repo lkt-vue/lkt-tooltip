@@ -1,6 +1,6 @@
 {
   "name": "lkt-tooltip",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "",
   "type": "module",
   "module": "./dist/build.js",
@@ -43,6 +43,7 @@
     "lkt-button": "^1.1.21",
     "lkt-i18n": "^1.0.4",
     "lkt-ts-interfaces": "^1.0.5",
+    "lkt-vue-kernel": "^1.0.3",
     "process": "^0.11.10",
     "sass": "^1.57.1",
     "vue": "^3.2.37"

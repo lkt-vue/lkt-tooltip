@@ -4,52 +4,31 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch} from "vue";
 import {__} from "lkt-i18n";
 import {PositionInstance} from "../instances/PositionInstance";
-import {PositionEngine} from "../enum/PositionEngine";
 import {getAbsoluteEnginePosition} from "../functions/positioning-functions";
+import {
+    getDefaultValues,
+    Tooltip,
+    TooltipConfig,
+    TooltipLocationX,
+    TooltipLocationY,
+    TooltipPositionEngine
+} from "lkt-vue-kernel";
 
 const emit = defineEmits(['update:modelValue']);
 
 const slots = useSlots();
 
-const props = withDefaults(defineProps<{
-    modelValue?: boolean
-    alwaysOpen?: boolean
-    class?: string,
-    text?: string,
-    icon?: string,
-    iconAtEnd?: boolean,
-    engine?: PositionEngine,
-
-    referrerMargin?: number|string
-    windowMargin?: number|string
-    referrerWidth?: boolean,
-    referrer: HTMLElement,
-    locationY?: 'top' | 'bottom' | 'center' | 'referrer-center'
-    locationX?: 'left' | 'right' | 'center' | 'left-corner' | 'right-corner'
-}>(), {
-    modelValue: false,
-    alwaysOpen: false,
-    class: '',
-    text: '',
-    icon: '',
-    iconAtEnd: false,
-    engine: PositionEngine.Fixed,
-    referrerWidth: false,
-    locationY: 'bottom',
-    locationX: 'left-corner',
-    referrerMargin: 0,
-    windowMargin: 0,
-});
+const props = withDefaults(defineProps<TooltipConfig>(), getDefaultValues(Tooltip));
 
 const calculatedReferrerMargin = typeof props.referrerMargin === 'string' ? parseFloat(props.referrerMargin) : props.referrerMargin;
 const calculatedWindowMargin = typeof props.windowMargin === 'string' ? parseFloat(props.windowMargin) : props.windowMargin;
 
 const styles = ref(new PositionInstance({
-        position: 'fixed',
+        position: TooltipPositionEngine.Fixed,
     })),
     isOpen = ref(props.modelValue),
-    contentInnerObserver = ref(<MutationObserver|null>null),
-    sizerElement = ref(<HTMLElement|null>null);
+    contentInnerObserver = ref(<MutationObserver | null>null),
+    sizerElement = ref(<HTMLElement | null>null);
 
 const computedClassName = computed(() => {
         return props.class;
@@ -133,10 +112,9 @@ const adjustStyle = () => {
         styles.value.right = undefined;
     }
 
-    if (props.locationY === 'top') {
+    if (props.locationY === TooltipLocationY.Top) {
         styles.value.top = currentTop - sizerElement.value.offsetHeight;
-    }
-    else if (props.locationY === 'center') {
+    } else if (props.locationY === TooltipLocationY.Center) {
         styles.value.top = rect.top - (sizerElement.value.offsetHeight / 2) + (props.referrer.offsetHeight / 2);
     }
 
@@ -161,16 +139,16 @@ const adjustStyle = () => {
 }
 
 const calcStyle = () => {
-    if (props.engine === PositionEngine.Absolute) {
-        styles.value.assign(getAbsoluteEnginePosition(
-            props.referrer,
-            calculatedReferrerMargin,
-            props.referrerWidth,
-            props.locationX,
-            props.locationY,
-        ))
-        return;
-    }
+        if (props.engine === TooltipPositionEngine.Absolute) {
+            styles.value.assign(getAbsoluteEnginePosition(
+                props.referrer,
+                calculatedReferrerMargin,
+                props.referrerWidth,
+                props.locationX,
+                props.locationY,
+            ))
+            return;
+        }
 
         if (!props.referrer) return;
         const rect = props.referrer.getBoundingClientRect();
@@ -179,20 +157,20 @@ const calcStyle = () => {
             styles.value.width = props.referrer.offsetWidth;
         }
 
-        if (props.locationY === 'top') {
+        if (props.locationY === TooltipLocationY.Top) {
             styles.value.top = rect.top - calculatedReferrerMargin;
 
-        } else if (props.locationY === 'bottom') {
+        } else if (props.locationY === TooltipLocationY.Bottom) {
             styles.value.top = rect.top + props.referrer.offsetHeight + calculatedReferrerMargin;
 
-        } else if (props.locationY === 'referrer-center') {
+        } else if (props.locationY === TooltipLocationY.ReferrerCenter) {
             styles.value.top = rect.top + (props.referrer.offsetHeight / 2) + calculatedReferrerMargin;
         }
 
-        if (props.locationX === 'left-corner') {
+        if (props.locationX === TooltipLocationX.LeftCorner) {
             styles.value.left = rect.left;
 
-        } else if (props.locationX === 'right') {
+        } else if (props.locationX === TooltipLocationX.Right) {
             styles.value.left = rect.left + props.referrer.offsetWidth + calculatedReferrerMargin;
         }
 

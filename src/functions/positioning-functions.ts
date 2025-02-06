@@ -1,11 +1,12 @@
 import {PositionInstance} from "../instances/PositionInstance";
+import {TooltipLocationX, TooltipLocationY, TooltipPositionEngine} from "lkt-vue-kernel";
 
-export const getAbsoluteEnginePosition = (referrer: HTMLElement, referrerMargin: number, referrerWidth: boolean, locationX: string, locationY: string) => {
+export const getAbsoluteEnginePosition = (referrer: HTMLElement, referrerMargin: number, referrerWidth: boolean, locationX: TooltipLocationX, locationY: TooltipLocationY) => {
 
     if (!referrer) return {};
 
     let r = new PositionInstance({
-        position: 'absolute',
+        position: TooltipPositionEngine.Absolute,
     });
     const rect = referrer.getBoundingClientRect();
 
@@ -13,20 +14,20 @@ export const getAbsoluteEnginePosition = (referrer: HTMLElement, referrerMargin:
         r.width = referrer.offsetWidth;
     }
 
-    if (locationY === 'top') {
+    if (locationY === TooltipLocationY.Top) {
         r.top = 0 - referrerMargin;
 
-    } else if (locationY === 'bottom') {
+    } else if (locationY === TooltipLocationY.Bottom) {
         r.top = referrer.offsetHeight + referrerMargin;
 
-    } else if (locationY === 'referrer-center') {
+    } else if (locationY === TooltipLocationY.ReferrerCenter) {
         r.top = (referrer.offsetHeight / 2) + referrerMargin;
     }
 
-    if (locationX === 'left-corner') {
+    if (locationX === TooltipLocationX.LeftCorner) {
         r.left = 0;
 
-    } else if (locationX === 'right') {
+    } else if (locationX === TooltipLocationX.Right) {
         r.left = referrer.offsetWidth + referrerMargin;
     }
 
