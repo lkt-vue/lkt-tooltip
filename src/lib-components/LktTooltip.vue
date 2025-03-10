@@ -203,6 +203,14 @@ const calcStyle = () => {
         } else if (!referrerIsHovered.value) {
             clearTimeout(showTooltipOnHoverTimeout.value);
         }
+    },
+    onReferrerMousemove = (event: MouseEvent) => {
+        referrerIsHovered.value = true;
+        handleReferrerHover(event);
+    },
+    onReferrerMouseleave = (event: MouseEvent) => {
+        referrerIsHovered.value = false;
+        handleReferrerHover(event);
     };
 
 watch(() => props.modelValue, v => isOpen.value = v);
@@ -232,14 +240,8 @@ onMounted(() => {
         }
 
         if (props.showOnReferrerHover || props.hideOnReferrerLeave) {
-            props.referrer.addEventListener('mousemove', (event: MouseEvent) => {
-                referrerIsHovered.value = true;
-                handleReferrerHover(event);
-            });
-            props.referrer.addEventListener('mouseleave', (event: MouseEvent) => {
-                referrerIsHovered.value = false;
-                handleReferrerHover(event);
-            });
+            props.referrer.addEventListener('mousemove', onReferrerMousemove);
+            props.referrer.addEventListener('mouseleave', onReferrerMouseleave);
         }
     }
 
@@ -271,6 +273,11 @@ onBeforeUnmount(() => {
         let modalScroller = props.referrer.closest(".lkt-modal");
         if (modalScroller) {
             modalScroller.removeEventListener('scroll', calcStyle);
+        }
+
+        if (props.showOnReferrerHover || props.hideOnReferrerLeave) {
+            props.referrer.removeEventListener('mousemove', onReferrerMousemove);
+            props.referrer.removeEventListener('mouseleave', onReferrerMouseleave);
         }
     }
 
