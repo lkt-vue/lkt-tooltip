@@ -1,11 +1,9 @@
 <script setup lang="ts">
-
-// Props
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch} from "vue";
-import {__} from "lkt-i18n";
 import {PositionInstance} from "../instances/PositionInstance";
 import {getAbsoluteEnginePosition} from "../functions/positioning-functions";
 import {
+    extractI18nValue,
     getDefaultValues,
     Tooltip,
     TooltipConfig,
@@ -14,7 +12,9 @@ import {
     TooltipPositionEngine
 } from "lkt-vue-kernel";
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits([
+    'update:modelValue'
+]);
 
 const slots = useSlots();
 
@@ -35,12 +35,7 @@ const computedClassName = computed(() => {
     }),
     computedText = computed(() => {
 
-        let text = '';
-        if (props.text.startsWith('__:')) {
-            text = __(props.text.substring(3));
-        } else {
-            text = props.text;
-        }
+        let text = extractI18nValue(props.text);
 
         if (props.icon) {
             let icon = '<i class="' + props.icon + '"></i>'
@@ -246,7 +241,9 @@ onBeforeUnmount(() => {
         }
     }
 
-    contentInnerObserver.value.disconnect();
+    if (typeof contentInnerObserver.value?.disconnect === 'function') {
+        contentInnerObserver.value?.disconnect();
+    }
 })
 
 </script>

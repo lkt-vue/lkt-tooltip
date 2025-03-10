@@ -1,6 +1,5 @@
-import { defineComponent, useSlots, ref, computed, watch, nextTick, onMounted, onBeforeUnmount, withDirectives, openBlock, createElementBlock, normalizeStyle, normalizeClass, unref, renderSlot, vShow, mergeDefaults } from "vue";
-import { __ } from "lkt-i18n";
-import { TooltipPositionEngine, TooltipLocationY, TooltipLocationX, getDefaultValues, Tooltip } from "lkt-vue-kernel";
+import { defineComponent, mergeDefaults, useSlots, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, withDirectives, createElementBlock, openBlock, normalizeStyle, normalizeClass, unref, renderSlot, vShow } from "vue";
+import { TooltipPositionEngine, TooltipLocationY, TooltipLocationX, extractI18nValue, getDefaultValues, Tooltip } from "lkt-vue-kernel";
 class PositionInstance {
   constructor(data) {
     this.top = void 0;
@@ -70,7 +69,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     locationY: {},
     locationX: {}
   }, getDefaultValues(Tooltip)),
-  emits: ["update:modelValue"],
+  emits: [
+    "update:modelValue"
+  ],
   setup(__props, { emit: __emit }) {
     const emit = __emit;
     const slots = useSlots();
@@ -83,12 +84,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const computedClassName = computed(() => {
       return props.class;
     }), computedText = computed(() => {
-      let text = "";
-      if (props.text.startsWith("__:")) {
-        text = __(props.text.substring(3));
-      } else {
-        text = props.text;
-      }
+      let text = extractI18nValue(props.text);
       if (props.icon) {
         let icon = '<i class="' + props.icon + '"></i>';
         if (props.iconAtEnd) {
@@ -231,6 +227,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       });
     });
     onBeforeUnmount(() => {
+      var _a, _b;
       window.removeEventListener("click", onClickOutside);
       window.removeEventListener("scroll", onScrollEvent);
       window.removeEventListener("resize", calcStyle);
@@ -240,7 +237,9 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           modalScroller.removeEventListener("scroll", calcStyle);
         }
       }
-      contentInnerObserver.value.disconnect();
+      if (typeof ((_a = contentInnerObserver.value) == null ? void 0 : _a.disconnect) === "function") {
+        (_b = contentInnerObserver.value) == null ? void 0 : _b.disconnect();
+      }
     });
     return (_ctx, _cache) => {
       return withDirectives((openBlock(), createElementBlock("div", {
