@@ -67,7 +67,10 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     referrerWidth: { type: Boolean },
     referrer: {},
     locationY: {},
-    locationX: {}
+    locationX: {},
+    showOnReferrerHover: { type: Boolean },
+    showOnReferrerHoverDelay: {},
+    hideOnReferrerLeave: { type: Boolean }
   }, getDefaultValues(Tooltip)),
   emits: [
     "update:modelValue"
@@ -80,7 +83,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const calculatedWindowMargin = typeof props.windowMargin === "string" ? parseFloat(props.windowMargin) : props.windowMargin;
     const styles = ref(new PositionInstance({
       position: TooltipPositionEngine.Fixed
-    })), isOpen = ref(props.modelValue), contentInnerObserver = ref(null), sizerElement = ref(null);
+    })), isOpen = ref(props.modelValue), contentInnerObserver = ref(null), sizerElement = ref(null), showTooltipOnHoverTimeout = ref(void 0), referrerIsHovered = ref(false);
     const computedClassName = computed(() => {
       return props.class;
     }), computedText = computed(() => {
@@ -188,6 +191,21 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         doClose();
         return;
       }
+    }, handleReferrerHover = ($event) => {
+      if (referrerIsHovered.value && props.showOnReferrerHover) {
+        if (showTooltipOnHoverTimeout.value !== void 0) {
+          clearTimeout(showTooltipOnHoverTimeout.value);
+        }
+        showTooltipOnHoverTimeout.value = setTimeout(() => {
+          isOpen.value = true;
+          clearTimeout(showTooltipOnHoverTimeout.value);
+        }, props.showOnReferrerHoverDelay);
+      } else if (!referrerIsHovered.value && props.hideOnReferrerLeave) {
+        isOpen.value = false;
+        clearTimeout(showTooltipOnHoverTimeout.value);
+      } else if (!referrerIsHovered.value) {
+        clearTimeout(showTooltipOnHoverTimeout.value);
+      }
     };
     watch(() => props.modelValue, (v) => isOpen.value = v);
     watch(isOpen, (v) => {
@@ -207,6 +225,16 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         let modalScroller = props.referrer.closest(".lkt-modal");
         if (modalScroller) {
           modalScroller.addEventListener("scroll", calcStyle);
+        }
+        if (props.showOnReferrerHover || props.hideOnReferrerLeave) {
+          props.referrer.addEventListener("mousemove", (event) => {
+            referrerIsHovered.value = true;
+            handleReferrerHover();
+          });
+          props.referrer.addEventListener("mouseleave", (event) => {
+            referrerIsHovered.value = false;
+            handleReferrerHover();
+          });
         }
       }
       if (isOpen.value) {

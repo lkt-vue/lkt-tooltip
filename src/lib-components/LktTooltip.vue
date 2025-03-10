@@ -28,7 +28,9 @@ const styles = ref(new PositionInstance({
     })),
     isOpen = ref(props.modelValue),
     contentInnerObserver = ref(<MutationObserver | null>null),
-    sizerElement = ref(<HTMLElement | null>null);
+    sizerElement = ref(<HTMLElement | null>null),
+    showTooltipOnHoverTimeout = ref(undefined),
+    referrerIsHovered = ref(false);
 
 const computedClassName = computed(() => {
         return props.class;
@@ -181,6 +183,26 @@ const calcStyle = () => {
             doClose();
             return;
         }
+    },
+    handleReferrerHover = ($event: MouseEvent) => {
+        if (referrerIsHovered.value && props.showOnReferrerHover) {
+            if (showTooltipOnHoverTimeout.value !== undefined) {
+                clearTimeout(showTooltipOnHoverTimeout.value);
+            }
+
+            //@ts-ignore
+            showTooltipOnHoverTimeout.value = setTimeout(() => {
+                isOpen.value = true;
+                clearTimeout(showTooltipOnHoverTimeout.value);
+            }, props.showOnReferrerHoverDelay);
+
+        } else if (!referrerIsHovered.value && props.hideOnReferrerLeave) {
+            isOpen.value = false;
+            clearTimeout(showTooltipOnHoverTimeout.value);
+
+        } else if (!referrerIsHovered.value) {
+            clearTimeout(showTooltipOnHoverTimeout.value);
+        }
     };
 
 watch(() => props.modelValue, v => isOpen.value = v);
@@ -207,6 +229,17 @@ onMounted(() => {
         let modalScroller = props.referrer.closest(".lkt-modal");
         if (modalScroller) {
             modalScroller.addEventListener('scroll', calcStyle);
+        }
+
+        if (props.showOnReferrerHover || props.hideOnReferrerLeave) {
+            props.referrer.addEventListener('mousemove', (event: MouseEvent) => {
+                referrerIsHovered.value = true;
+                handleReferrerHover(event);
+            });
+            props.referrer.addEventListener('mouseleave', (event: MouseEvent) => {
+                referrerIsHovered.value = false;
+                handleReferrerHover(event);
+            });
         }
     }
 
