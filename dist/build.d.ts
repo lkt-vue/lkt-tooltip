@@ -1,4 +1,4 @@
-export { LktTooltip as default };
-declare namespace LktTooltip {
-    function install(app: any): void;
+export { ve as default };
+declare namespace ve {
+    function install(l: any): void;
 }

@@ -1,60 +1,30 @@
-import { defineComponent, mergeDefaults, useSlots, ref, computed, watch, onMounted, nextTick, onBeforeUnmount, withDirectives, createElementBlock, openBlock, normalizeStyle, normalizeClass, unref, renderSlot, vShow } from "vue";
-import { TooltipPositionEngine, TooltipLocationY, TooltipLocationX, extractI18nValue, getDefaultValues, Tooltip } from "lkt-vue-kernel";
-class PositionInstance {
-  constructor(data) {
-    this.top = void 0;
-    this.bottom = void 0;
-    this.left = void 0;
-    this.right = void 0;
-    this.width = void 0;
-    this.position = "";
-    for (let k in data) this[k] = data[k];
+import { defineComponent as $, mergeDefaults as j, useSlots as U, ref as w, computed as H, watch as A, onMounted as q, nextTick as D, onBeforeUnmount as G, withDirectives as J, createElementBlock as b, openBlock as O, normalizeStyle as K, normalizeClass as Q, unref as Z, renderSlot as ee, vShow as te } from "vue";
+import { TooltipPositionEngine as k, TooltipLocationY as p, TooltipLocationX as L, extractI18nValue as oe, getDefaultValues as ie, Tooltip as re } from "lkt-vue-kernel";
+class V {
+  constructor(o) {
+    this.top = void 0, this.bottom = void 0, this.left = void 0, this.right = void 0, this.width = void 0, this.position = "";
+    for (let f in o) this[f] = o[f];
   }
-  assign(data) {
-    for (let k in data) this[k] = data[k];
+  assign(o) {
+    for (let f in o) this[f] = o[f];
   }
   getStyles() {
-    let r = {};
-    if (this.position) r.position = this.position;
-    if (this.top) r.top = this.top + "px";
-    if (this.bottom) r.bottom = this.bottom + "px";
-    if (this.left) r.left = this.left + "px";
-    if (this.right) r.right = this.right + "px";
-    if (this.width) r.width = this.width + "px";
-    return r;
+    let o = {};
+    return this.position && (o.position = this.position), this.top && (o.top = this.top + "px"), this.bottom && (o.bottom = this.bottom + "px"), this.left && (o.left = this.left + "px"), this.right && (o.right = this.right + "px"), this.width && (o.width = this.width + "px"), o;
   }
 }
-const getAbsoluteEnginePosition = (referrer, referrerMargin, referrerWidth, locationX, locationY) => {
-  if (!referrer) return {};
-  let r = new PositionInstance({
-    position: TooltipPositionEngine.Absolute
+const le = (l, o, f, y, e) => {
+  if (!l) return {};
+  let r = new V({
+    position: k.Absolute
   });
-  referrer.getBoundingClientRect();
-  if (referrerWidth) {
-    r.width = referrer.offsetWidth;
-  }
-  if (locationY === TooltipLocationY.Top) {
-    r.top = 0 - referrerMargin;
-  } else if (locationY === TooltipLocationY.Bottom) {
-    r.top = referrer.offsetHeight + referrerMargin;
-  } else if (locationY === TooltipLocationY.ReferrerCenter) {
-    r.top = referrer.offsetHeight / 2 + referrerMargin;
-  }
-  if (locationX === TooltipLocationX.LeftCorner) {
-    r.left = 0;
-  } else if (locationX === TooltipLocationX.Right) {
-    r.left = referrer.offsetWidth + referrerMargin;
-  }
-  return r;
-};
-const _hoisted_1 = {
+  return l.getBoundingClientRect(), f && (r.width = l.offsetWidth), e === p.Top ? r.top = 0 - o : e === p.Bottom ? r.top = l.offsetHeight + o : e === p.ReferrerCenter && (r.top = l.offsetHeight / 2 + o), y === L.LeftCorner ? r.left = 0 : y === L.Right && (r.left = l.offsetWidth + o), r;
+}, ne = {
   key: 0,
   class: "lkt-tooltip-content"
-};
-const _hoisted_2 = ["innerHTML"];
-const _sfc_main = /* @__PURE__ */ defineComponent({
+}, se = ["innerHTML"], ae = /* @__PURE__ */ $({
   __name: "LktTooltip",
-  props: /* @__PURE__ */ mergeDefaults({
+  props: /* @__PURE__ */ j({
     modelValue: { type: Boolean },
     alwaysOpen: { type: Boolean },
     class: {},
@@ -70,234 +40,133 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     locationX: {},
     showOnReferrerHover: { type: Boolean },
     showOnReferrerHoverDelay: {},
-    hideOnReferrerLeave: { type: Boolean }
-  }, getDefaultValues(Tooltip)),
+    hideOnReferrerLeave: { type: Boolean },
+    hideOnReferrerLeaveDelay: {}
+  }, ie(re)),
   emits: [
     "update:modelValue"
   ],
-  setup(__props, { emit: __emit }) {
-    const emit = __emit;
-    const slots = useSlots();
-    const props = __props;
-    const calculatedReferrerMargin = typeof props.referrerMargin === "string" ? parseFloat(props.referrerMargin) : props.referrerMargin;
-    const calculatedWindowMargin = typeof props.windowMargin === "string" ? parseFloat(props.windowMargin) : props.windowMargin;
-    const styles = ref(new PositionInstance({
-      position: TooltipPositionEngine.Fixed
-    })), isOpen = ref(props.modelValue), contentInnerObserver = ref(null), sizerElement = ref(null), showTooltipOnHoverTimeout = ref(void 0), referrerIsHovered = ref(false);
-    const computedClassName = computed(() => {
-      return props.class;
-    }), computedText = computed(() => {
-      let text = extractI18nValue(props.text);
-      if (props.icon) {
-        let icon = '<i class="' + props.icon + '"></i>';
-        if (props.iconAtEnd) {
-          text += icon;
-        } else {
-          text = icon + text;
-        }
+  setup(l, { emit: o }) {
+    const f = o, y = U(), e = l, r = typeof e.referrerMargin == "string" ? parseFloat(e.referrerMargin) : e.referrerMargin, a = typeof e.windowMargin == "string" ? parseFloat(e.windowMargin) : e.windowMargin, i = w(new V({
+      position: k.Fixed
+    })), u = w(e.modelValue), E = w(null), v = w(null), d = w(void 0), c = w(void 0), g = w(!1), Y = H(() => e.class), I = H(() => {
+      let t = oe(e.text);
+      if (e.icon) {
+        let n = '<i class="' + e.icon + '"></i>';
+        e.iconAtEnd ? t += n : t = n + t;
       }
-      return text;
-    }), computedStyles = computed(() => {
-      return styles.value.getStyles();
-    });
-    const doClose = () => {
-      isOpen.value = false;
-    };
-    const getScrollbarWidth = () => {
-      const outer = document.createElement("div");
-      outer.style.visibility = "hidden";
-      outer.style.overflow = "scroll";
-      outer.style.msOverflowStyle = "scrollbar";
-      document.body.appendChild(outer);
-      const inner = document.createElement("div");
-      outer.appendChild(inner);
-      const scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
-      outer.parentNode.removeChild(outer);
-      return scrollbarWidth;
-    };
-    const adjustStyle = () => {
-      if (!sizerElement.value) return;
-      const rect = props.referrer.getBoundingClientRect(), sizerElementWidth = sizerElement.value.offsetWidth;
-      let scrollBarWidth = getScrollbarWidth();
-      let contentEndsAtRight = rect.left + sizerElementWidth + scrollBarWidth;
-      let currentTop = styles.value.top ? styles.value.top : rect.top;
-      if (contentEndsAtRight > window.innerWidth - calculatedWindowMargin - scrollBarWidth) {
-        let diff = contentEndsAtRight - window.innerWidth;
-        let newLeft = rect.left - diff - calculatedWindowMargin - scrollBarWidth;
-        if (newLeft < 0) newLeft = calculatedWindowMargin;
-        styles.value.left = newLeft;
-        if (calculatedWindowMargin) {
-          styles.value.right = calculatedWindowMargin;
-        } else {
-          styles.value.right = 0;
-        }
-      } else {
-        styles.value.right = void 0;
-      }
-      if (props.locationY === TooltipLocationY.Top) {
-        styles.value.top = currentTop - sizerElement.value.offsetHeight;
-      } else if (props.locationY === TooltipLocationY.Center) {
-        styles.value.top = rect.top - sizerElement.value.offsetHeight / 2 + props.referrer.offsetHeight / 2;
-      }
-      let contentEndsAtBottom = rect.top + sizerElement.value.offsetHeight + scrollBarWidth;
-      if (contentEndsAtBottom > window.innerHeight - calculatedWindowMargin - scrollBarWidth) {
-        let diff = contentEndsAtBottom - window.innerHeight;
-        let newTop = rect.top - diff - calculatedWindowMargin - scrollBarWidth;
-        if (newTop < 0) newTop = calculatedWindowMargin;
-        styles.value.top = newTop;
-        if (calculatedWindowMargin) {
-          styles.value.bottom = calculatedWindowMargin;
-        } else {
-          styles.value.bottom = 0;
-        }
-      } else {
-        styles.value.bottom = void 0;
-      }
-    };
-    const calcStyle = () => {
-      if (props.engine === TooltipPositionEngine.Absolute) {
-        styles.value.assign(getAbsoluteEnginePosition(
-          props.referrer,
-          calculatedReferrerMargin,
-          props.referrerWidth,
-          props.locationX,
-          props.locationY
+      return t;
+    }), X = H(() => i.value.getStyles()), W = () => {
+      u.value = !1;
+    }, F = () => {
+      var T;
+      const t = document.createElement("div");
+      t.style.visibility = "hidden", t.style.overflow = "scroll", t.style.msOverflowStyle = "scrollbar", document.body.appendChild(t);
+      const n = document.createElement("div");
+      t.appendChild(n);
+      const s = t.offsetWidth - n.offsetWidth;
+      return (T = t.parentNode) == null || T.removeChild(t), s;
+    }, P = () => {
+      if (!v.value) return;
+      const t = e.referrer.getBoundingClientRect(), n = v.value.offsetWidth;
+      let s = F(), T = t.left + n + s, N = i.value.top ? i.value.top : t.top;
+      if (T > window.innerWidth - a - s) {
+        let R = T - window.innerWidth, m = t.left - R - a - s;
+        m < 0 && (m = a), i.value.left = m, a ? i.value.right = a : i.value.right = 0;
+      } else
+        i.value.right = void 0;
+      e.locationY === p.Top ? i.value.top = N - v.value.offsetHeight : e.locationY === p.Center && (i.value.top = t.top - v.value.offsetHeight / 2 + e.referrer.offsetHeight / 2);
+      let z = t.top + v.value.offsetHeight + s;
+      if (z > window.innerHeight - a - s) {
+        let R = z - window.innerHeight, m = t.top - R - a - s;
+        m < 0 && (m = a), i.value.top = m, a ? i.value.bottom = a : i.value.bottom = 0;
+      } else
+        i.value.bottom = void 0;
+    }, h = () => {
+      if (e.engine === k.Absolute) {
+        i.value.assign(le(
+          e.referrer,
+          r,
+          e.referrerWidth,
+          e.locationX,
+          e.locationY
         ));
         return;
       }
-      if (!props.referrer) return;
-      const rect = props.referrer.getBoundingClientRect();
-      if (props.referrerWidth) {
-        styles.value.width = props.referrer.offsetWidth;
-      }
-      if (props.locationY === TooltipLocationY.Top) {
-        styles.value.top = rect.top - calculatedReferrerMargin;
-      } else if (props.locationY === TooltipLocationY.Bottom) {
-        styles.value.top = rect.top + props.referrer.offsetHeight + calculatedReferrerMargin;
-      } else if (props.locationY === TooltipLocationY.ReferrerCenter) {
-        styles.value.top = rect.top + props.referrer.offsetHeight / 2 + calculatedReferrerMargin;
-      }
-      if (props.locationX === TooltipLocationX.LeftCorner) {
-        styles.value.left = rect.left;
-      } else if (props.locationX === TooltipLocationX.Right) {
-        styles.value.left = rect.left + props.referrer.offsetWidth + calculatedReferrerMargin;
-      }
-      nextTick(() => {
-        adjustStyle();
+      if (!e.referrer) return;
+      const t = e.referrer.getBoundingClientRect();
+      e.referrerWidth && (i.value.width = e.referrer.offsetWidth), e.locationY === p.Top ? i.value.top = t.top - r : e.locationY === p.Bottom ? i.value.top = t.top + e.referrer.offsetHeight + r : e.locationY === p.ReferrerCenter && (i.value.top = t.top + e.referrer.offsetHeight / 2 + r), e.locationX === L.LeftCorner ? i.value.left = t.left : e.locationX === L.Right && (i.value.left = t.left + e.referrer.offsetWidth + r), D(() => {
+        P();
       });
-    }, onClickOutside = (e) => {
-      if (props.alwaysOpen) return;
-      if (isOpen.value && !(sizerElement.value.contains(e.target) || props.referrer.contains(e.target))) {
-        doClose();
+    }, B = (t) => {
+      if (!e.alwaysOpen && u.value && !(v.value.contains(t.target) || e.referrer.contains(t.target))) {
+        W();
         return;
       }
-    }, handleReferrerHover = ($event) => {
-      if (referrerIsHovered.value && props.showOnReferrerHover) {
-        if (showTooltipOnHoverTimeout.value !== void 0) {
-          clearTimeout(showTooltipOnHoverTimeout.value);
-        }
-        showTooltipOnHoverTimeout.value = setTimeout(() => {
-          isOpen.value = true;
-          clearTimeout(showTooltipOnHoverTimeout.value);
-        }, props.showOnReferrerHoverDelay);
-      } else if (!referrerIsHovered.value && props.hideOnReferrerLeave) {
-        isOpen.value = false;
-        clearTimeout(showTooltipOnHoverTimeout.value);
-      } else if (!referrerIsHovered.value) {
-        clearTimeout(showTooltipOnHoverTimeout.value);
-      }
-    }, onReferrerMousemove = (event) => {
-      referrerIsHovered.value = true;
-      handleReferrerHover();
-    }, onReferrerMouseleave = (event) => {
-      referrerIsHovered.value = false;
-      handleReferrerHover();
+    }, C = (t) => {
+      g.value && e.showOnReferrerHover ? (d.value !== void 0 && clearTimeout(d.value), c.value !== void 0 && clearTimeout(c.value), d.value = setTimeout(() => {
+        u.value = !0, clearTimeout(d.value), clearTimeout(c.value);
+      }, e.showOnReferrerHoverDelay)) : !g.value && e.hideOnReferrerLeave ? (d.value !== void 0 && clearTimeout(d.value), c.value !== void 0 && clearTimeout(c.value), c.value = setTimeout(() => {
+        u.value = !1, clearTimeout(c.value), clearTimeout(d.value);
+      }, e.showOnReferrerHoverDelay)) : g.value || (clearTimeout(d.value), clearTimeout(c.value));
+    }, S = (t) => {
+      g.value = !0, C();
+    }, x = (t) => {
+      g.value = !1, C();
     };
-    watch(() => props.modelValue, (v) => isOpen.value = v);
-    watch(isOpen, (v) => {
-      if (v) calcStyle();
-      emit("update:modelValue", v);
+    A(() => e.modelValue, (t) => u.value = t), A(u, (t) => {
+      t && h(), f("update:modelValue", t);
     });
-    let scrollTimeout = void 0;
-    const onScrollEvent = () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => calcStyle(), 1);
+    let M;
+    const _ = () => {
+      clearTimeout(M), M = setTimeout(() => h(), 1);
     };
-    onMounted(() => {
-      window.addEventListener("click", onClickOutside);
-      window.addEventListener("scroll", onScrollEvent);
-      window.addEventListener("resize", calcStyle);
-      if (props.referrer) {
-        let modalScroller = props.referrer.closest(".lkt-modal");
-        if (modalScroller) {
-          modalScroller.addEventListener("scroll", calcStyle);
-        }
-        if (props.showOnReferrerHover || props.hideOnReferrerLeave) {
-          props.referrer.addEventListener("mousemove", onReferrerMousemove);
-          props.referrer.addEventListener("mouseleave", onReferrerMouseleave);
-        }
+    return q(() => {
+      if (window.addEventListener("click", B), window.addEventListener("scroll", _), window.addEventListener("resize", h), e.referrer) {
+        let t = e.referrer.closest(".lkt-modal");
+        t && t.addEventListener("scroll", h), e.showOnReferrerHover && e.referrer.addEventListener("mousemove", S), e.hideOnReferrerLeave && e.referrer.addEventListener("mouseleave", x);
       }
-      if (isOpen.value) {
-        calcStyle();
-      }
-      nextTick(() => {
-        const observer = new MutationObserver(() => {
+      u.value && h(), D(() => {
+        const t = new MutationObserver(() => {
           setTimeout(() => {
-            calcStyle();
+            h();
           }, 1);
         });
-        observer.observe(sizerElement.value, {
-          childList: true,
-          subtree: true,
-          attributes: false
-        });
-        contentInnerObserver.value = observer;
+        t.observe(v.value, {
+          childList: !0,
+          subtree: !0,
+          attributes: !1
+        }), E.value = t;
       });
-    });
-    onBeforeUnmount(() => {
-      var _a, _b;
-      window.removeEventListener("click", onClickOutside);
-      window.removeEventListener("scroll", onScrollEvent);
-      window.removeEventListener("resize", calcStyle);
-      if (props.referrer) {
-        let modalScroller = props.referrer.closest(".lkt-modal");
-        if (modalScroller) {
-          modalScroller.removeEventListener("scroll", calcStyle);
-        }
-        if (props.showOnReferrerHover || props.hideOnReferrerLeave) {
-          props.referrer.removeEventListener("mousemove", onReferrerMousemove);
-          props.referrer.removeEventListener("mouseleave", onReferrerMouseleave);
-        }
+    }), G(() => {
+      var t, n;
+      if (window.removeEventListener("click", B), window.removeEventListener("scroll", _), window.removeEventListener("resize", h), e.referrer) {
+        let s = e.referrer.closest(".lkt-modal");
+        s && s.removeEventListener("scroll", h), e.showOnReferrerHover && e.referrer.removeEventListener("mousemove", S), e.hideOnReferrerLeave && e.referrer.removeEventListener("mouseleave", x);
       }
-      if (typeof ((_a = contentInnerObserver.value) == null ? void 0 : _a.disconnect) === "function") {
-        (_b = contentInnerObserver.value) == null ? void 0 : _b.disconnect();
-      }
-    });
-    return (_ctx, _cache) => {
-      return withDirectives((openBlock(), createElementBlock("div", {
-        ref_key: "sizerElement",
-        ref: sizerElement,
-        class: normalizeClass(["lkt-tooltip", computedClassName.value]),
-        style: normalizeStyle(computedStyles.value)
-      }, [
-        unref(slots).default ? (openBlock(), createElementBlock("div", _hoisted_1, [
-          renderSlot(_ctx.$slots, "default", { doClose })
-        ])) : (openBlock(), createElementBlock("div", {
-          key: 1,
-          class: "lkt-tooltip-content",
-          innerHTML: computedText.value
-        }, null, 8, _hoisted_2))
-      ], 6)), [
-        [vShow, isOpen.value]
-      ]);
-    };
+      typeof ((t = E.value) == null ? void 0 : t.disconnect) == "function" && ((n = E.value) == null || n.disconnect());
+    }), (t, n) => J((O(), b("div", {
+      ref_key: "sizerElement",
+      ref: v,
+      class: Q(["lkt-tooltip", Y.value]),
+      style: K(X.value)
+    }, [
+      Z(y).default ? (O(), b("div", ne, [
+        ee(t.$slots, "default", { doClose: W })
+      ])) : (O(), b("div", {
+        key: 1,
+        class: "lkt-tooltip-content",
+        innerHTML: I.value
+      }, null, 8, se))
+    ], 6)), [
+      [te, u.value]
+    ]);
   }
-});
-const LktTooltip = {
-  install: (app) => {
-    if (app.component("lkt-tooltip") === void 0) app.component("lkt-tooltip", _sfc_main);
+}), ve = {
+  install: (l) => {
+    l.component("lkt-tooltip") === void 0 && l.component("lkt-tooltip", ae);
   }
 };
 export {
-  LktTooltip as default
+  ve as default
 };

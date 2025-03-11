@@ -23,7 +23,7 @@ export default {
             formats: ['es']
         },
         outDir,
-        minify: false,
+        minify: true,
         rollupOptions: {
             external: [
                 'vue',

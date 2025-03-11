@@ -30,6 +30,7 @@ const styles = ref(new PositionInstance({
     contentInnerObserver = ref(<MutationObserver | null>null),
     sizerElement = ref(<HTMLElement | null>null),
     showTooltipOnHoverTimeout = ref(undefined),
+    hideTooltipOnLeaveTimeout = ref(undefined),
     referrerIsHovered = ref(false);
 
 const computedClassName = computed(() => {
@@ -66,6 +67,7 @@ const getScrollbarWidth = () => {
     const outer = document.createElement('div');
     outer.style.visibility = 'hidden';
     outer.style.overflow = 'scroll'; // forcing scrollbar to appear
+    // @ts-ignore
     outer.style.msOverflowStyle = 'scrollbar'; // needed for WinJS apps
     document.body.appendChild(outer);
 
@@ -77,7 +79,7 @@ const getScrollbarWidth = () => {
     const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
 
     // Removing temporary elements from the DOM
-    outer.parentNode.removeChild(outer);
+    outer.parentNode?.removeChild(outer);
 
     return scrollbarWidth;
 }
@@ -189,19 +191,35 @@ const calcStyle = () => {
             if (showTooltipOnHoverTimeout.value !== undefined) {
                 clearTimeout(showTooltipOnHoverTimeout.value);
             }
+            if (hideTooltipOnLeaveTimeout.value !== undefined) {
+                clearTimeout(hideTooltipOnLeaveTimeout.value);
+            }
 
             //@ts-ignore
             showTooltipOnHoverTimeout.value = setTimeout(() => {
                 isOpen.value = true;
                 clearTimeout(showTooltipOnHoverTimeout.value);
+                clearTimeout(hideTooltipOnLeaveTimeout.value);
             }, props.showOnReferrerHoverDelay);
 
         } else if (!referrerIsHovered.value && props.hideOnReferrerLeave) {
-            isOpen.value = false;
-            clearTimeout(showTooltipOnHoverTimeout.value);
+            if (showTooltipOnHoverTimeout.value !== undefined) {
+                clearTimeout(showTooltipOnHoverTimeout.value);
+            }
+            if (hideTooltipOnLeaveTimeout.value !== undefined) {
+                clearTimeout(hideTooltipOnLeaveTimeout.value);
+            }
+
+            //@ts-ignore
+            hideTooltipOnLeaveTimeout.value = setTimeout(() => {
+                isOpen.value = false;
+                clearTimeout(hideTooltipOnLeaveTimeout.value);
+                clearTimeout(showTooltipOnHoverTimeout.value);
+            }, props.showOnReferrerHoverDelay);
 
         } else if (!referrerIsHovered.value) {
             clearTimeout(showTooltipOnHoverTimeout.value);
+            clearTimeout(hideTooltipOnLeaveTimeout.value);
         }
     },
     onReferrerMousemove = (event: MouseEvent) => {
@@ -219,9 +237,11 @@ watch(isOpen, v => {
     emit('update:modelValue', v);
 });
 
+//@ts-ignore
 let scrollTimeout = undefined;
 
 const onScrollEvent = () => {
+    //@ts-ignore
     clearTimeout(scrollTimeout);
 
     scrollTimeout = setTimeout(() => calcStyle(), 1);
@@ -239,8 +259,10 @@ onMounted(() => {
             modalScroller.addEventListener('scroll', calcStyle);
         }
 
-        if (props.showOnReferrerHover || props.hideOnReferrerLeave) {
+        if (props.showOnReferrerHover) {
             props.referrer.addEventListener('mousemove', onReferrerMousemove);
+        }
+        if (props.hideOnReferrerLeave) {
             props.referrer.addEventListener('mouseleave', onReferrerMouseleave);
         }
     }
@@ -255,6 +277,7 @@ onMounted(() => {
                 calcStyle()
             }, 1);
         });
+        //@ts-ignore
         observer.observe(sizerElement.value, {
             childList: true,
             subtree: true,
@@ -275,8 +298,10 @@ onBeforeUnmount(() => {
             modalScroller.removeEventListener('scroll', calcStyle);
         }
 
-        if (props.showOnReferrerHover || props.hideOnReferrerLeave) {
+        if (props.showOnReferrerHover) {
             props.referrer.removeEventListener('mousemove', onReferrerMousemove);
+        }
+        if (props.hideOnReferrerLeave) {
             props.referrer.removeEventListener('mouseleave', onReferrerMouseleave);
         }
     }
