@@ -1,21 +1,31 @@
 :root {
-    --lkt-tooltip-gap: 15px;
-    --lkt-tooltip-font-size: 14px;
-    --lkt-tooltip-font-weight: 14px;
-    --lkt-tooltip-text-align: center;
-    --lkt-tooltip-padding: 15px;
-    --lkt-tooltip-min-width: initial;
-    --lkt-tooltip-max-width: initial;
-    --lkt-tooltip-width: initial;
-    --lkt-tooltip-bg: #ffffff;
-    --lkt-tooltip-bg-hover: #ffffff;
-    --lkt-tooltip-color: #444444;
-    --lkt-tooltip-color-hover: #444444;
-    --lkt-tooltip-border-radius: 1px;
-    --lkt-tooltip-border-width: 1px;
-    --lkt-tooltip-border-style: solid;
-    --lkt-tooltip-border-color: #ffffff;
-    --lkt-tooltip-border-color-hover: #ffffff;
-    --lkt-tooltip-transition: all linear 300ms;
-    --lkt-tooltip-shadow: 0 0 8px #0006;
+    --lkt-tooltip--display: inline-flex;
+    --lkt-tooltip--align-items: center;
+    --lkt-tooltip--justify-content: center;
+    --lkt-tooltip--gap: 15px;
+    --lkt-tooltip--font-size: 14px;
+    --lkt-tooltip--font-weight: 400;
+    --lkt-tooltip--text-align: center;
+    --lkt-tooltip--padding: 15px;
+    --lkt-tooltip--min-width: initial;
+    --lkt-tooltip--max-width: initial;
+    --lkt-tooltip--width: initial;
+    --lkt-tooltip--background: #ffffff;
+    --lkt-tooltip--color: #444444;
+    --lkt-tooltip--border-radius: 1px;
+    --lkt-tooltip--border-width: 1px;
+    --lkt-tooltip--border-style: solid;
+    --lkt-tooltip--border-color: #ffffff;
+    --lkt-tooltip--transition: all linear 300ms;
+    --lkt-tooltip--shadow: 0 0 8px #0006;
+    --lkt-tooltip--z-index: 200;
+
+    /** Element: Content */
+    --lkt-tooltip--content--width: 100%;
+    --lkt-tooltip--content--height: 100%;
+
+    /** Event: Hover */
+    --lkt-tooltip--hover--background: var(--lkt-tooltip--background);
+    --lkt-tooltip--hover--color: var(--lkt-tooltip--color);
+    --lkt-tooltip--hover--border-color: var(--lkt-tooltip--border-color);
 }
