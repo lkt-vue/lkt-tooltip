@@ -1,4 +1,4 @@
-:root {
+.lkt-tooltip {
     --lkt-tooltip--display: inline-flex;
     --lkt-tooltip--align-items: center;
     --lkt-tooltip--justify-content: center;
