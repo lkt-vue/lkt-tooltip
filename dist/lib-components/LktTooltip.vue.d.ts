@@ -30,6 +30,7 @@ declare const __VLS_self: import("vue").DefineComponent<TooltipConfig, {
     class: string;
     icon: string;
     modelValue: boolean;
+    contentClass: string;
     iconAtEnd: boolean;
     alwaysOpen: boolean;
     engine: TooltipPositionEngine;
@@ -53,6 +54,7 @@ declare const __VLS_component: import("vue").DefineComponent<TooltipConfig, {}, 
     class: string;
     icon: string;
     modelValue: boolean;
+    contentClass: string;
     iconAtEnd: boolean;
     alwaysOpen: boolean;
     engine: TooltipPositionEngine;
