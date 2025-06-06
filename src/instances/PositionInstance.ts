@@ -15,6 +15,13 @@ export class PositionInstance {
     }
 
     assign(data: LktObject|PositionInstance) {
+        this.top = undefined;
+        this.bottom = undefined;
+        this.left = undefined;
+        this.right = undefined;
+        this.width = undefined;
+        this.position = '';
+
         //@ts-ignore
         for (let k in data) this[k] = data[k];
     }

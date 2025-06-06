@@ -1,27 +1,76 @@
-import { defineComponent as j, mergeDefaults as U, useSlots as q, ref as w, computed as H, watch as V, onMounted as G, nextTick as Y, onBeforeUnmount as J, withDirectives as K, createElementBlock as b, openBlock as O, normalizeStyle as Q, normalizeClass as k, unref as Z, renderSlot as ee, vShow as te } from "vue";
-import { TooltipPositionEngine as C, TooltipLocationY as p, TooltipLocationX as L, extractI18nValue as oe, getDefaultValues as ie, Tooltip as re } from "lkt-vue-kernel";
-class _ {
+import { defineComponent as _, mergeDefaults as I, useSlots as $, ref as g, computed as F, watch as N, onMounted as j, nextTick as M, onBeforeUnmount as U, withDirectives as q, createElementBlock as P, openBlock as A, normalizeStyle as G, normalizeClass as D, unref as J, renderSlot as K, vShow as Q } from "vue";
+import { TooltipPositionEngine as S, TooltipLocationY as w, TooltipLocationX as x, TooltipSettingsController as X, extractI18nValue as Z, getDefaultValues as z, Tooltip as Y } from "lkt-vue-kernel";
+class V {
   constructor(o) {
     this.top = void 0, this.bottom = void 0, this.left = void 0, this.right = void 0, this.width = void 0, this.position = "";
-    for (let f in o) this[f] = o[f];
+    for (let r in o) this[r] = o[r];
   }
   assign(o) {
-    for (let f in o) this[f] = o[f];
+    this.top = void 0, this.bottom = void 0, this.left = void 0, this.right = void 0, this.width = void 0, this.position = "";
+    for (let r in o) this[r] = o[r];
   }
   getStyles() {
     let o = {};
     return this.position && (o.position = this.position), this.top && (o.top = this.top + "px"), this.bottom && (o.bottom = this.bottom + "px"), this.left && (o.left = this.left + "px"), this.right && (o.right = this.right + "px"), this.width && (o.width = this.width + "px"), o;
   }
 }
-const le = (l, o, f, y, e) => {
+const ee = (l, o, r, c, e) => {
   if (!l) return {};
-  let r = new _({
-    position: C.Absolute
+  let n = new V({
+    position: S.Absolute
   });
-  return l.getBoundingClientRect(), f && (r.width = l.offsetWidth), e === p.Top ? r.top = 0 - o : e === p.Bottom ? r.top = l.offsetHeight + o : e === p.ReferrerCenter && (r.top = l.offsetHeight / 2 + o), y === L.LeftCorner ? r.left = 0 : y === L.Right && (r.left = l.offsetWidth + o), r;
-}, ne = ["innerHTML"], se = /* @__PURE__ */ j({
+  return r && (n.width = l.offsetWidth), e === w.Top ? n.top = 0 - o : e === w.Bottom ? n.top = l.offsetHeight + o : e === w.ReferrerCenter && (n.top = l.offsetHeight / 2 + o), c === x.LeftCorner ? n.left = 0 : c === x.Right && (n.left = l.offsetWidth + o), n;
+}, te = () => {
+  var c;
+  const l = document.createElement("div");
+  l.style.visibility = "hidden", l.style.overflow = "scroll", l.style.msOverflowStyle = "scrollbar", document.body.appendChild(l);
+  const o = document.createElement("div");
+  l.appendChild(o);
+  const r = l.offsetWidth - o.offsetWidth;
+  return (c = l.parentNode) == null || c.removeChild(l), r;
+};
+function oe(l) {
+  let o = 0, r = 0;
+  for (; l; )
+    o += l.offsetTop - (l.scrollTop || 0), r += l.offsetLeft - (l.scrollLeft || 0), l = l.offsetParent;
+  return { top: o, left: r };
+}
+const ie = (l, o, r, c, e, n, E, v, f, H = !1) => {
+  var C, k, R;
+  if (!l) return {};
+  n = parseFloat(n), e = parseFloat(e), isNaN(n) && (n = 0), isNaN(e) && (e = 0);
+  let i = new V({
+    position: S.Fixed
+  });
+  oe(l), window.pageYOffset || document.documentElement.scrollTop;
+  const d = window.scrollY || document.documentElement.scrollTop;
+  window.scrollX || document.documentElement.scrollLeft;
+  const s = l.getBoundingClientRect(), p = s.height, B = (C = f == null ? void 0 : f.offsetWidth) != null ? C : 0, y = (k = f == null ? void 0 : f.offsetHeight) != null ? k : 0, h = te(), b = window.innerWidth;
+  if (c && (i.width = s.width), v === w.Top ? i.top = s.top - r - n : v === w.Bottom ? i.top = s.top + p + r - n : v === w.ReferrerCenter && (i.top = s.top + p / 2 + r), E === x.LeftCorner ? i.left = s.left - e : E === x.Right && (i.left = s.left + l.offsetWidth + r - e), !(l == null ? void 0 : l.closest(".lkt-modal"))) {
+    let u = 0, t = 0;
+    (R = X.data.globalContainersAffectingPositioning) == null || R.forEach((m) => {
+      const T = getComputedStyle(m);
+      u += parseFloat(T.borderTopWidth) || 0, u += parseFloat(T.paddingTop) || 0, t += parseFloat(T.borderLeftWidth) || 0, t += parseFloat(T.paddingLeft) || 0;
+    }), i.left && (i.left -= t), i.top && (i.top -= u), i.top && (i.top += d);
+  }
+  let a = i.left + B + h;
+  if (a > b - o - h) {
+    let u = a - b, t = parseFloat(i.left) - u;
+    t <= 0 && o && (t = o), i.left = t, i.left !== 0 && (o ? i.right = o + h : i.left > 0 && (i.right = h));
+  } else
+    i.right = void 0;
+  let L = i.top ? i.top : s.top;
+  v === w.Top ? i.top = L - y : v === w.Center && (i.top = s.top - y / 2 + p / 2), L = i.top ? i.top : s.top;
+  let O = L + y + h;
+  if (O > window.innerHeight - o - h) {
+    let u = O - window.innerHeight, t = i.top - u - o - h;
+    t < 0 && (t = o), i.top = t, o ? i.bottom = o : i.bottom = 0;
+  } else
+    i.bottom = void 0;
+  return i;
+}, le = ["innerHTML"], re = /* @__PURE__ */ _({
   __name: "LktTooltip",
-  props: /* @__PURE__ */ U({
+  props: /* @__PURE__ */ I({
     modelValue: { type: Boolean },
     alwaysOpen: { type: Boolean },
     class: {},
@@ -39,135 +88,123 @@ const le = (l, o, f, y, e) => {
     showOnReferrerHover: { type: Boolean },
     showOnReferrerHoverDelay: {},
     hideOnReferrerLeave: { type: Boolean },
-    hideOnReferrerLeaveDelay: {}
-  }, ie(re)),
+    hideOnReferrerLeaveDelay: {},
+    compensationX: {},
+    compensationY: {}
+  }, z(Y)),
   emits: [
     "update:modelValue"
   ],
   setup(l, { emit: o }) {
-    const f = o, y = q(), e = l, r = typeof e.referrerMargin == "string" ? parseFloat(e.referrerMargin) : e.referrerMargin, a = typeof e.windowMargin == "string" ? parseFloat(e.windowMargin) : e.windowMargin, i = w(new _({
-      position: C.Fixed
-    })), u = w(e.modelValue), E = w(null), v = w(null), d = w(void 0), c = w(void 0), g = w(!1), I = H(() => e.class), X = H(() => {
-      let t = oe(e.text);
+    const r = o, c = $(), e = l, n = typeof e.referrerMargin == "string" ? parseFloat(e.referrerMargin) : e.referrerMargin, E = typeof e.windowMargin == "string" ? parseFloat(e.windowMargin) : e.windowMargin, v = g(new V({
+      position: S.Fixed
+    })), f = g(e.modelValue), H = g(null), i = g(null), d = g(void 0), s = g(void 0), p = g(!1), B = F(() => e.class), y = F(() => {
+      let t = Z(e.text);
       if (e.icon) {
-        let n = '<i class="' + e.icon + '"></i>';
-        e.iconAtEnd ? t += n : t = n + t;
+        let m = '<i class="' + e.icon + '"></i>';
+        e.iconAtEnd ? t += m : t = m + t;
       }
       return t;
-    }), F = H(() => i.value.getStyles()), W = () => {
-      u.value = !1;
-    }, P = () => {
-      var T;
-      const t = document.createElement("div");
-      t.style.visibility = "hidden", t.style.overflow = "scroll", t.style.msOverflowStyle = "scrollbar", document.body.appendChild(t);
-      const n = document.createElement("div");
-      t.appendChild(n);
-      const s = t.offsetWidth - n.offsetWidth;
-      return (T = t.parentNode) == null || T.removeChild(t), s;
-    }, N = () => {
-      if (!v.value) return;
-      const t = e.referrer.getBoundingClientRect(), n = v.value.offsetWidth;
-      let s = P(), T = t.left + n + s, $ = i.value.top ? i.value.top : t.top;
-      if (T > window.innerWidth - a - s) {
-        let R = T - window.innerWidth, m = t.left - R - a - s;
-        m < 0 && (m = a), i.value.left = m, a ? i.value.right = a : i.value.right = 0;
-      } else
-        i.value.right = void 0;
-      e.locationY === p.Top ? i.value.top = $ - v.value.offsetHeight : e.locationY === p.Center && (i.value.top = t.top - v.value.offsetHeight / 2 + e.referrer.offsetHeight / 2);
-      let D = t.top + v.value.offsetHeight + s;
-      if (D > window.innerHeight - a - s) {
-        let R = D - window.innerHeight, m = t.top - R - a - s;
-        m < 0 && (m = a), i.value.top = m, a ? i.value.bottom = a : i.value.bottom = 0;
-      } else
-        i.value.bottom = void 0;
-    }, h = () => {
-      if (e.engine === C.Absolute) {
-        i.value.assign(le(
+    }), h = F(() => v.value.getStyles()), b = () => {
+      f.value = !1;
+    };
+    let W;
+    const a = () => {
+      W && clearTimeout(W), W = setTimeout(() => {
+        if (e.engine === S.Absolute) {
+          v.value.assign(ee(
+            e.referrer,
+            n,
+            e.referrerWidth,
+            e.locationX,
+            e.locationY
+          ));
+          return;
+        }
+        v.value.assign(ie(
           e.referrer,
-          r,
+          E,
+          n,
           e.referrerWidth,
+          e.compensationX,
+          e.compensationY,
           e.locationX,
-          e.locationY
+          e.locationY,
+          i.value
         ));
+      }, 50);
+    }, L = (t) => {
+      if (!e.alwaysOpen && f.value && !(i.value.contains(t.target) || e.referrer.contains(t.target))) {
+        b();
         return;
       }
-      if (!e.referrer) return;
-      const t = e.referrer.getBoundingClientRect();
-      e.referrerWidth && (i.value.width = e.referrer.offsetWidth), e.locationY === p.Top ? i.value.top = t.top - r : e.locationY === p.Bottom ? i.value.top = t.top + e.referrer.offsetHeight + r : e.locationY === p.ReferrerCenter && (i.value.top = t.top + e.referrer.offsetHeight / 2 + r), e.locationX === L.LeftCorner ? i.value.left = t.left : e.locationX === L.Right && (i.value.left = t.left + e.referrer.offsetWidth + r), Y(() => {
-        N();
-      });
-    }, B = (t) => {
-      if (!e.alwaysOpen && u.value && !(v.value.contains(t.target) || e.referrer.contains(t.target))) {
-        W();
-        return;
-      }
-    }, S = (t) => {
-      g.value && e.showOnReferrerHover ? (d.value !== void 0 && clearTimeout(d.value), c.value !== void 0 && clearTimeout(c.value), d.value = setTimeout(() => {
-        u.value = !0, clearTimeout(d.value), clearTimeout(c.value);
-      }, e.showOnReferrerHoverDelay)) : !g.value && e.hideOnReferrerLeave ? (d.value !== void 0 && clearTimeout(d.value), c.value !== void 0 && clearTimeout(c.value), c.value = setTimeout(() => {
-        u.value = !1, clearTimeout(c.value), clearTimeout(d.value);
-      }, e.showOnReferrerHoverDelay)) : g.value || (clearTimeout(d.value), clearTimeout(c.value));
-    }, M = (t) => {
-      g.value = !0, S();
-    }, x = (t) => {
-      g.value = !1, S();
+    }, O = (t) => {
+      p.value && e.showOnReferrerHover ? (d.value !== void 0 && clearTimeout(d.value), s.value !== void 0 && clearTimeout(s.value), d.value = setTimeout(() => {
+        f.value = !0, clearTimeout(d.value), clearTimeout(s.value);
+      }, e.showOnReferrerHoverDelay)) : !p.value && e.hideOnReferrerLeave ? (d.value !== void 0 && clearTimeout(d.value), s.value !== void 0 && clearTimeout(s.value), s.value = setTimeout(() => {
+        f.value = !1, clearTimeout(s.value), clearTimeout(d.value);
+      }, e.showOnReferrerHoverDelay)) : p.value || (clearTimeout(d.value), clearTimeout(s.value));
+    }, C = (t) => {
+      p.value = !0, O();
+    }, k = (t) => {
+      p.value = !1, O();
     };
-    V(() => e.modelValue, (t) => u.value = t), V(u, (t) => {
-      t && h(), f("update:modelValue", t);
+    N(() => e.modelValue, (t) => f.value = t), N(f, (t) => {
+      t && a(), r("update:modelValue", t);
     });
-    let z;
-    const A = () => {
-      clearTimeout(z), z = setTimeout(() => h(), 1);
+    let R;
+    const u = () => {
+      clearTimeout(R), R = setTimeout(() => a(), 1);
     };
-    return G(() => {
-      if (window.addEventListener("click", B), window.addEventListener("scroll", A), window.addEventListener("resize", h), e.referrer) {
+    return j(() => {
+      if (window.addEventListener("click", L), window.addEventListener("scroll", u), window.addEventListener("resize", a), e.referrer) {
         let t = e.referrer.closest(".lkt-modal");
-        t && t.addEventListener("scroll", h), e.showOnReferrerHover && e.referrer.addEventListener("mousemove", M), e.hideOnReferrerLeave && e.referrer.addEventListener("mouseleave", x);
+        t && t.addEventListener("scroll", a), e.showOnReferrerHover && e.referrer.addEventListener("mousemove", C), e.hideOnReferrerLeave && e.referrer.addEventListener("mouseleave", k);
       }
-      u.value && h(), Y(() => {
+      f.value && a(), M(() => {
         const t = new MutationObserver(() => {
           setTimeout(() => {
-            h();
+            a();
           }, 1);
         });
-        t.observe(v.value, {
+        t.observe(i.value, {
           childList: !0,
           subtree: !0,
           attributes: !1
-        }), E.value = t;
+        }), H.value = t;
       });
-    }), J(() => {
-      var t, n;
-      if (window.removeEventListener("click", B), window.removeEventListener("scroll", A), window.removeEventListener("resize", h), e.referrer) {
-        let s = e.referrer.closest(".lkt-modal");
-        s && s.removeEventListener("scroll", h), e.showOnReferrerHover && e.referrer.removeEventListener("mousemove", M), e.hideOnReferrerLeave && e.referrer.removeEventListener("mouseleave", x);
+    }), U(() => {
+      var t, m;
+      if (window.removeEventListener("click", L), window.removeEventListener("scroll", u), window.removeEventListener("resize", a), e.referrer) {
+        let T = e.referrer.closest(".lkt-modal");
+        T && T.removeEventListener("scroll", a), e.showOnReferrerHover && e.referrer.removeEventListener("mousemove", C), e.hideOnReferrerLeave && e.referrer.removeEventListener("mouseleave", k);
       }
-      typeof ((t = E.value) == null ? void 0 : t.disconnect) == "function" && ((n = E.value) == null || n.disconnect());
-    }), (t, n) => K((O(), b("div", {
+      typeof ((t = H.value) == null ? void 0 : t.disconnect) == "function" && ((m = H.value) == null || m.disconnect());
+    }), (t, m) => q((A(), P("div", {
       ref_key: "sizerElement",
-      ref: v,
-      class: k(["lkt-tooltip", I.value]),
-      style: Q(F.value)
+      ref: i,
+      class: D(["lkt-tooltip", B.value]),
+      style: G(h.value)
     }, [
-      Z(y).default ? (O(), b("div", {
+      J(c).default ? (A(), P("div", {
         key: 0,
-        class: k(["lkt-tooltip-content", t.contentClass])
+        class: D(["lkt-tooltip-content", t.contentClass])
       }, [
-        ee(t.$slots, "default", { doClose: W })
-      ], 2)) : (O(), b("div", {
+        K(t.$slots, "default", { doClose: b })
+      ], 2)) : (A(), P("div", {
         key: 1,
-        class: k(["lkt-tooltip-content", t.contentClass]),
-        innerHTML: X.value
-      }, null, 10, ne))
+        class: D(["lkt-tooltip-content", t.contentClass]),
+        innerHTML: y.value
+      }, null, 10, le))
     ], 6)), [
-      [te, u.value]
+      [Q, f.value]
     ]);
   }
-}), ue = {
+}), fe = {
   install: (l) => {
-    l.component("lkt-tooltip") === void 0 && l.component("lkt-tooltip", se);
+    l.component("lkt-tooltip") === void 0 && l.component("lkt-tooltip", re);
   }
 };
 export {
-  ue as default
+  fe as default
 };
