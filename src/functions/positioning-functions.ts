@@ -80,7 +80,7 @@ export const getFixedEnginePosition = (
     locationX: TooltipLocationX,
     locationY: TooltipLocationY,
     sizerElement?: HTMLElement,
-    adjusted: boolean = false
+    compensateGlobalContainers: boolean = false
 ) => {
 
     if (!referrer) return {};
@@ -96,18 +96,17 @@ export const getFixedEnginePosition = (
         position: TooltipPositionEngine.Fixed,
     });
 
-    const absolutePosition = getAbsolutePosition(referrer);
-    const scrollOffset = window.pageYOffset || document.documentElement.scrollTop;
+    // const absolutePosition = getAbsolutePosition(referrer);
+    // const scrollOffset = window.pageYOffset || document.documentElement.scrollTop;
 
     const scrollY = window.scrollY || document.documentElement.scrollTop;
-    const scrollX = window.scrollX || document.documentElement.scrollLeft;
+    // const scrollX = window.scrollX || document.documentElement.scrollLeft;
 
     const rect = referrer.getBoundingClientRect(),
         referrerHeight = rect.height,
         sizerElementWidth = sizerElement?.offsetWidth ?? 0,
         sizerElementHeight = sizerElement?.offsetHeight ?? 0,
         scrollBarWidth = getScrollbarWidth(),
-        windowHeight = window.innerHeight,
         windowWidth = window.innerWidth;
 
     if (referrerWidth) {
@@ -132,26 +131,28 @@ export const getFixedEnginePosition = (
     }
 
     // Deal with containers affecting positioning (only if not inside lkt-modal)
-    let modalContainer = referrer?.closest('.lkt-modal');
-    if (!modalContainer) {
-        let topOffset = 0;
-        let leftOffset = 0;
-        TooltipSettingsController.data.globalContainersAffectingPositioning?.forEach(element => {
-            const style = getComputedStyle(element);
+    if (compensateGlobalContainers) {
+        let modalContainer = referrer?.closest('.lkt-modal');
+        if (!modalContainer) {
+            let topOffset = 0;
+            let leftOffset = 0;
+            TooltipSettingsController.data.globalContainersAffectingPositioning?.forEach(element => {
+                const style = getComputedStyle(element);
 
-            // Accumulate top offset
-            topOffset += parseFloat(style.borderTopWidth) || 0;
-            topOffset += parseFloat(style.paddingTop) || 0;
+                // Accumulate top offset
+                topOffset += parseFloat(style.borderTopWidth) || 0;
+                topOffset += parseFloat(style.paddingTop) || 0;
 
-            // Accumulate left offset
-            leftOffset += parseFloat(style.borderLeftWidth) || 0;
-            leftOffset += parseFloat(style.paddingLeft) || 0;
-        })
+                // Accumulate left offset
+                leftOffset += parseFloat(style.borderLeftWidth) || 0;
+                leftOffset += parseFloat(style.paddingLeft) || 0;
+            })
 
-        if (r.left) r.left -= leftOffset;
-        if (r.top) r.top -= topOffset;
+            if (r.left) r.left -= leftOffset;
+            if (r.top) r.top -= topOffset;
 
-        if (r.top) r.top += scrollY;
+            if (r.top) r.top += scrollY;
+        }
     }
 
 

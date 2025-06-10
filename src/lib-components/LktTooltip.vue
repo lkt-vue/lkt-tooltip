@@ -86,7 +86,8 @@ const calcStyle = () => {
                 props.compensationY,
                 props.locationX,
                 props.locationY,
-                sizerElement.value
+                sizerElement.value,
+                props.compensateGlobalContainers
             ))
         }, 50);
 
