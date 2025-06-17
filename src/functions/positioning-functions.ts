@@ -130,30 +130,31 @@ export const getFixedEnginePosition = (
         r.left = rect.left + referrer.offsetWidth + referrerMargin - compensationX;
     }
 
-    // Deal with containers affecting positioning (only if not inside lkt-modal)
-    if (compensateGlobalContainers) {
-        let modalContainer = referrer?.closest('.lkt-modal');
-        if (!modalContainer) {
-            let topOffset = 0;
-            let leftOffset = 0;
-            TooltipSettingsController.data.globalContainersAffectingPositioning?.forEach(element => {
-                const style = getComputedStyle(element);
+    // // Deal with containers affecting positioning (only if not inside lkt-modal)
+    // if (compensateGlobalContainers) {
+    //     let modalContainer = referrer?.closest('.lkt-modal');
+    //     if (!modalContainer) {
+    //         let topOffset = 0;
+    //         let leftOffset = 0;
+    //         TooltipSettingsController.data.globalContainersAffectingPositioning?.forEach(element => {
+    //             const style = getComputedStyle(element);
+    //
+    //             // Accumulate top offset
+    //             topOffset += parseFloat(style.borderTopWidth) || 0;
+    //             topOffset += parseFloat(style.paddingTop) || 0;
+    //
+    //             // Accumulate left offset
+    //             leftOffset += parseFloat(style.borderLeftWidth) || 0;
+    //             leftOffset += parseFloat(style.paddingLeft) || 0;
+    //         })
+    //
+    //         if (r.left) r.left -= leftOffset;
+    //         if (r.top) r.top -= topOffset;
+    //
+    //         if (r.top) r.top += scrollY;
+    //     }
+    // }
 
-                // Accumulate top offset
-                topOffset += parseFloat(style.borderTopWidth) || 0;
-                topOffset += parseFloat(style.paddingTop) || 0;
-
-                // Accumulate left offset
-                leftOffset += parseFloat(style.borderLeftWidth) || 0;
-                leftOffset += parseFloat(style.paddingLeft) || 0;
-            })
-
-            if (r.left) r.left -= leftOffset;
-            if (r.top) r.top -= topOffset;
-
-            if (r.top) r.top += scrollY;
-        }
-    }
 
 
 

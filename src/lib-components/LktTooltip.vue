@@ -56,6 +56,7 @@ const computedClassName = computed(() => {
     });
 
 const doClose = () => {
+    if (props.remoteControl) return;
     isOpen.value = false;
 }
 
@@ -97,12 +98,13 @@ const calcStyle = () => {
         if (props.alwaysOpen) return;
 
         //@ts-ignore
-        if (isOpen.value && !(sizerElement.value.contains(e.target) || props.referrer.contains(e.target))) {
+        if (isOpen.value && !props.remoteControl && !(sizerElement.value.contains(e.target) || props.referrer.contains(e.target))) {
             doClose();
             return;
         }
     },
     handleReferrerHover = ($event: MouseEvent) => {
+        if (props.remoteControl) return;
         if (referrerIsHovered.value && props.showOnReferrerHover) {
             if (showTooltipOnHoverTimeout.value !== undefined) {
                 clearTimeout(showTooltipOnHoverTimeout.value);
@@ -150,6 +152,7 @@ const calcStyle = () => {
 watch(() => props.modelValue, v => isOpen.value = v);
 watch(isOpen, v => {
     if (v) calcStyle();
+    if (props.remoteControl) return;
     emit('update:modelValue', v);
 });
 

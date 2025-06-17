@@ -46,6 +46,7 @@ declare const __VLS_self: import("vue").DefineComponent<TooltipConfig, {
     compensationX: number;
     compensationY: number;
     compensateGlobalContainers: boolean;
+    remoteControl: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 declare const __VLS_component: import("vue").DefineComponent<TooltipConfig, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     "update:modelValue": (...args: any[]) => void;
@@ -73,6 +74,7 @@ declare const __VLS_component: import("vue").DefineComponent<TooltipConfig, {}, 
     compensationX: number;
     compensationY: number;
     compensateGlobalContainers: boolean;
+    remoteControl: boolean;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 declare const _default: __VLS_WithSlots<typeof __VLS_component, __VLS_Slots>;
 export default _default;
