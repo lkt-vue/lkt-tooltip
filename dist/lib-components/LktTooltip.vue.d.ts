@@ -6,11 +6,15 @@ declare const isOpen: import("vue").Ref<boolean, boolean>, sizerElement: import(
 declare const computedClassName: import("vue").ComputedRef<string>, computedText: import("vue").ComputedRef<any>, computedStyles: import("vue").ComputedRef<import("lkt-ts-interfaces").LktObject>;
 declare const doClose: () => void;
 declare const __VLS_ctx: InstanceType<__VLS_PickNotAny<typeof __VLS_self, new () => {}>>;
-declare var __VLS_1: {
+declare var __VLS_5: {
+    doClose: () => void;
+}, __VLS_7: {
     doClose: () => void;
 };
 type __VLS_Slots = __VLS_PrettifyGlobal<__VLS_OmitStringIndex<typeof __VLS_ctx.$slots> & {
-    default?: (props: typeof __VLS_1) => any;
+    default?: (props: typeof __VLS_5) => any;
+} & {
+    default?: (props: typeof __VLS_7) => any;
 }>;
 declare const __VLS_self: import("vue").DefineComponent<TooltipConfig, {
     slots: typeof slots;
@@ -47,6 +51,7 @@ declare const __VLS_self: import("vue").DefineComponent<TooltipConfig, {
     compensationY: number;
     compensateGlobalContainers: boolean;
     remoteControl: boolean;
+    teleport: string;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 declare const __VLS_component: import("vue").DefineComponent<TooltipConfig, {}, {}, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {
     "update:modelValue": (...args: any[]) => void;
@@ -75,6 +80,7 @@ declare const __VLS_component: import("vue").DefineComponent<TooltipConfig, {}, 
     compensationY: number;
     compensateGlobalContainers: boolean;
     remoteControl: boolean;
+    teleport: string;
 }, {}, {}, {}, string, import("vue").ComponentProvideOptions, false, {}, any>;
 declare const _default: __VLS_WithSlots<typeof __VLS_component, __VLS_Slots>;
 export default _default;

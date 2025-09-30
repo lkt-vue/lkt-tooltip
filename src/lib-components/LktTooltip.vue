@@ -233,19 +233,40 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div
-        v-show="isOpen"
-        ref="sizerElement"
-        class="lkt-tooltip"
-        :class="computedClassName"
-        :style="computedStyles">
-        <template v-if="slots.default">
-            <div class="lkt-tooltip-content" :class="contentClass">
-                <slot name="default" :do-close="doClose"/>
+    <template v-if="teleport">
+        <teleport :to="teleport">
+            <div
+                v-show="isOpen"
+                ref="sizerElement"
+                class="lkt-tooltip"
+                :class="computedClassName"
+                :style="computedStyles">
+                <template v-if="slots.default">
+                    <div class="lkt-tooltip-content" :class="contentClass">
+                        <slot name="default" :do-close="doClose"/>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="lkt-tooltip-content" :class="contentClass" v-html="computedText"/>
+                </template>
             </div>
-        </template>
-        <template v-else>
-            <div class="lkt-tooltip-content" :class="contentClass" v-html="computedText"/>
-        </template>
-    </div>
+        </teleport>
+    </template>
+    <template v-else>
+        <div
+            v-show="isOpen"
+            ref="sizerElement"
+            class="lkt-tooltip"
+            :class="computedClassName"
+            :style="computedStyles">
+            <template v-if="slots.default">
+                <div class="lkt-tooltip-content" :class="contentClass">
+                    <slot name="default" :do-close="doClose"/>
+                </div>
+            </template>
+            <template v-else>
+                <div class="lkt-tooltip-content" :class="contentClass" v-html="computedText"/>
+            </template>
+        </div>
+    </template>
 </template>

@@ -1,4 +1,4 @@
-export { ne as default };
-declare namespace ne {
+export { ue as default };
+declare namespace ue {
     function install(l: any): void;
 }
