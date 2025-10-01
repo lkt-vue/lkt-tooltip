@@ -243,11 +243,17 @@ onBeforeUnmount(() => {
                 :style="computedStyles">
                 <template v-if="slots.default">
                     <div class="lkt-tooltip-content" :class="contentClass">
-                        <slot name="default" :do-close="doClose"/>
+                        <div v-if="indicator" class="lkt-tooltip-indicator"/>
+                        <div class="lkt-tooltip-content-inner">
+                            <slot name="default" :do-close="doClose"/>
+                        </div>
                     </div>
                 </template>
                 <template v-else>
-                    <div class="lkt-tooltip-content" :class="contentClass" v-html="computedText"/>
+                    <div class="lkt-tooltip-content" :class="contentClass">
+                        <div v-if="indicator" class="lkt-tooltip-indicator"/>
+                        <div class="lkt-tooltip-content-inner" v-html="computedText"/>
+                    </div>
                 </template>
             </div>
         </teleport>
@@ -261,11 +267,17 @@ onBeforeUnmount(() => {
             :style="computedStyles">
             <template v-if="slots.default">
                 <div class="lkt-tooltip-content" :class="contentClass">
-                    <slot name="default" :do-close="doClose"/>
+                    <div v-if="indicator" class="lkt-tooltip-indicator"/>
+                    <div class="lkt-tooltip-content-inner">
+                        <slot name="default" :do-close="doClose"/>
+                    </div>
                 </div>
             </template>
             <template v-else>
-                <div class="lkt-tooltip-content" :class="contentClass" v-html="computedText"/>
+                <div class="lkt-tooltip-content" :class="contentClass">
+                    <div v-if="indicator" class="lkt-tooltip-indicator"/>
+                    <div class="lkt-tooltip-content-inner" v-html="computedText"/>
+                </div>
             </template>
         </div>
     </template>

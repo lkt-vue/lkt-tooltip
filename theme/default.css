@@ -28,4 +28,9 @@
     --lkt-tooltip--hover--background: var(--lkt-tooltip--background);
     --lkt-tooltip--hover--color: var(--lkt-tooltip--color);
     --lkt-tooltip--hover--border-color: var(--lkt-tooltip--border-color);
+
+    /** Element: Indicator */
+    --lkt-tooltip--indicator--size: 5px;
+    --lkt-tooltip--top-indicator--y: calc(var(--lkt-tooltip--indicator--size) * -1);
+    --lkt-tooltip--top-indicator--x: 15px;
 }

@@ -37,6 +37,7 @@ declare const __VLS_self: import("vue").DefineComponent<TooltipConfig, {
     contentClass: string;
     iconAtEnd: boolean;
     alwaysOpen: boolean;
+    indicator: boolean;
     engine: TooltipPositionEngine;
     referrerMargin: number | string;
     windowMargin: number | string;
@@ -66,6 +67,7 @@ declare const __VLS_component: import("vue").DefineComponent<TooltipConfig, {}, 
     contentClass: string;
     iconAtEnd: boolean;
     alwaysOpen: boolean;
+    indicator: boolean;
     engine: TooltipPositionEngine;
     referrerMargin: number | string;
     windowMargin: number | string;

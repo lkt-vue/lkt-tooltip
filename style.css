@@ -31,3 +31,17 @@
     width: var(--lkt-tooltip--content--width, 100%);
     height: var(--lkt-tooltip--content--height, 100%);
 }
+
+.lkt-tooltip-indicator {
+    content: '';
+    position: absolute;
+
+    width: 0;
+    height: 0;
+    border-left: var(--lkt-tooltip--indicator--size) solid transparent;
+    border-right: var(--lkt-tooltip--indicator--size) solid transparent;
+
+    border-bottom: var(--lkt-tooltip--indicator--size) solid var(--lkt-tooltip--background);
+    top: var(--lkt-tooltip--top-indicator--y);
+    left: var(--lkt-tooltip--top-indicator--x);
+}
