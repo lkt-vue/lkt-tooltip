@@ -1,73 +1,79 @@
-import { defineComponent as q, mergeDefaults as z, useSlots as J, ref as k, computed as N, watch as I, onMounted as K, nextTick as Q, onBeforeUnmount as Z, createBlock as X, withDirectives as G, openBlock as p, Teleport as Y, createElementVNode as B, normalizeStyle as M, normalizeClass as H, createElementBlock as m, unref as $, createCommentVNode as _, renderSlot as U, vShow as j } from "vue";
-import { TooltipPositionEngine as V, TooltipLocationY as y, TooltipLocationX as F, extractI18nValue as ee, getDefaultValues as te, Tooltip as oe } from "lkt-vue-kernel";
-class D {
+import { defineComponent as Y, mergeDefaults as ee, useSlots as te, ref as g, computed as P, watch as j, onMounted as oe, nextTick as ie, onBeforeUnmount as le, resolveComponent as re, createBlock as A, withDirectives as q, openBlock as r, Teleport as ne, createElementVNode as B, normalizeStyle as z, normalizeClass as k, createElementBlock as a, createCommentVNode as F, Fragment as J, renderList as K, mergeProps as Q, unref as Z, renderSlot as X, vShow as x } from "vue";
+import { TooltipPositionEngine as V, TooltipLocationY as y, TooltipLocationX as N, extractI18nValue as se, getDefaultValues as ae, Tooltip as de } from "lkt-vue-kernel";
+class I {
   constructor(o) {
     this.top = void 0, this.bottom = void 0, this.left = void 0, this.right = void 0, this.width = void 0, this.position = "";
-    for (let s in o) this[s] = o[s];
+    for (let d in o) this[d] = o[d];
   }
   assign(o) {
     this.top = void 0, this.bottom = void 0, this.left = void 0, this.right = void 0, this.width = void 0, this.position = "";
-    for (let s in o) this[s] = o[s];
+    for (let d in o) this[d] = o[d];
   }
   getStyles() {
     let o = {};
     return this.position && (o.position = this.position), this.top && (o.top = this.top + "px"), this.bottom && (o.bottom = this.bottom + "px"), this.left && (o.left = this.left + "px"), this.right && (o.right = this.right + "px"), this.width && (o.width = this.width + "px"), o;
   }
 }
-const ie = (l, o, s, c, e) => {
+const ce = (l, o, d, v, e) => {
   if (!l) return {};
-  let n = new D({
+  let s = new I({
     position: V.Absolute
   });
-  return s && (n.width = l.offsetWidth), e === y.Top ? n.top = 0 - o : e === y.Bottom ? n.top = l.offsetHeight + o : e === y.ReferrerCenter && (n.top = l.offsetHeight / 2 + o), c === F.LeftCorner ? n.left = 0 : c === F.Right && (n.left = l.offsetWidth + o), n;
-}, le = () => {
-  var c;
+  return d && (s.width = l.offsetWidth), e === y.Top ? s.top = 0 - o : e === y.Bottom ? s.top = l.offsetHeight + o : e === y.ReferrerCenter && (s.top = l.offsetHeight / 2 + o), v === N.LeftCorner ? s.left = 0 : v === N.Right && (s.left = l.offsetWidth + o), s;
+}, fe = () => {
+  var v;
   const l = document.createElement("div");
   l.style.visibility = "hidden", l.style.overflow = "scroll", l.style.msOverflowStyle = "scrollbar", document.body.appendChild(l);
   const o = document.createElement("div");
   l.appendChild(o);
-  const s = l.offsetWidth - o.offsetWidth;
-  return (c = l.parentNode) == null || c.removeChild(l), s;
-}, re = (l, o, s, c, e, n, W, h, a, S = !1) => {
+  const d = l.offsetWidth - o.offsetWidth;
+  return (v = l.parentNode) == null || v.removeChild(l), d;
+}, ue = (l, o, d, v, e, s, W, m, c, S = !1) => {
   var R, E;
   if (!l) return {};
-  n = parseFloat(n), e = parseFloat(e), isNaN(n) && (n = 0), isNaN(e) && (e = 0);
-  let i = new D({
+  s = parseFloat(s), e = parseFloat(e), isNaN(s) && (s = 0), isNaN(e) && (e = 0);
+  let i = new I({
     position: V.Fixed
   });
   window.scrollY || document.documentElement.scrollTop;
-  const r = l.getBoundingClientRect(), f = r.height, w = (R = a == null ? void 0 : a.offsetWidth) != null ? R : 0, g = (E = a == null ? void 0 : a.offsetHeight) != null ? E : 0, u = le(), O = window.innerWidth;
-  c && (i.width = r.width), h === y.Top ? i.top = r.top - s - n : h === y.Bottom ? i.top = r.top + f + s - n : h === y.ReferrerCenter && (i.top = r.top + f / 2 + s), W === F.LeftCorner ? i.left = r.left - e : W === F.Right && (i.left = r.left + l.offsetWidth + s - e);
-  let L = i.left + w + u;
-  if (L > O - o - u) {
-    let C = L - O, v = parseFloat(i.left) - C;
-    v <= 0 && o && (v = o), i.left = v, i.left !== 0 && (o ? i.right = o + u : i.left > 0 && (i.right = u));
+  const n = l.getBoundingClientRect(), f = n.height, w = (R = c == null ? void 0 : c.offsetWidth) != null ? R : 0, L = (E = c == null ? void 0 : c.offsetHeight) != null ? E : 0, p = fe(), O = window.innerWidth;
+  v && (i.width = n.width), m === y.Top ? i.top = n.top - d - s : m === y.Bottom ? i.top = n.top + f + d - s : m === y.ReferrerCenter && (i.top = n.top + f / 2 + d), W === N.LeftCorner ? i.left = n.left - e : W === N.Right && (i.left = n.left + l.offsetWidth + d - e);
+  let C = i.left + w + p;
+  if (C > O - o - p) {
+    let b = C - O, h = parseFloat(i.left) - b;
+    h <= 0 && o && (h = o), i.left = h, i.left !== 0 && (o ? i.right = o + p : i.left > 0 && (i.right = p));
   } else
     i.right = void 0;
-  let T = i.top ? i.top : r.top;
-  h === y.Top ? i.top = T - g : h === y.Center && (i.top = r.top - g / 2 + f / 2), T = i.top ? i.top : r.top;
-  let d = T + g + u;
-  if (d > window.innerHeight - o - u) {
-    let C = d - window.innerHeight, v = i.top - C - o - u;
-    v < 0 && (v = o), i.top = v, o ? i.bottom = o : i.bottom = 0;
+  let T = i.top ? i.top : n.top;
+  m === y.Top ? i.top = T - L : m === y.Center && (i.top = n.top - L / 2 + f / 2), T = i.top ? i.top : n.top;
+  let u = T + L + p;
+  if (u > window.innerHeight - o - p) {
+    let b = u - window.innerHeight, h = i.top - b - o - p;
+    h < 0 && (h = o), i.top = h, o ? i.bottom = o : i.bottom = 0;
   } else
     i.bottom = void 0;
   return i;
-}, ne = {
+}, ve = {
   key: 0,
   class: "lkt-tooltip-indicator"
-}, se = { class: "lkt-tooltip-content-inner" }, ae = {
+}, pe = { class: "lkt-tooltip-content-inner" }, he = {
   key: 0,
   class: "lkt-tooltip-indicator"
-}, fe = ["innerHTML"], de = {
+}, me = { class: "lkt-tooltip-content-inner" }, ke = {
   key: 0,
   class: "lkt-tooltip-indicator"
-}, ce = { class: "lkt-tooltip-content-inner" }, ue = {
+}, ye = ["innerHTML"], we = {
   key: 0,
   class: "lkt-tooltip-indicator"
-}, ve = ["innerHTML"], pe = /* @__PURE__ */ q({
+}, Te = { class: "lkt-tooltip-content-inner" }, ge = {
+  key: 0,
+  class: "lkt-tooltip-indicator"
+}, Le = { class: "lkt-tooltip-content-inner" }, Ce = {
+  key: 0,
+  class: "lkt-tooltip-indicator"
+}, be = ["innerHTML"], He = /* @__PURE__ */ Y({
   __name: "LktTooltip",
-  props: /* @__PURE__ */ z({
+  props: /* @__PURE__ */ ee({
     modelValue: { type: Boolean },
     alwaysOpen: { type: Boolean },
     indicator: { type: Boolean },
@@ -91,41 +97,42 @@ const ie = (l, o, s, c, e) => {
     compensationY: {},
     compensateGlobalContainers: { type: Boolean },
     remoteControl: { type: Boolean },
-    teleport: {}
-  }, te(oe)),
+    teleport: {},
+    content: {}
+  }, ae(de)),
   emits: [
     "update:modelValue"
   ],
   setup(l, { emit: o }) {
-    const s = o, c = J(), e = l, n = typeof e.referrerMargin == "string" ? parseFloat(e.referrerMargin) : e.referrerMargin, W = typeof e.windowMargin == "string" ? parseFloat(e.windowMargin) : e.windowMargin, h = k(new D({
+    const d = o, v = te(), e = l, s = typeof e.referrerMargin == "string" ? parseFloat(e.referrerMargin) : e.referrerMargin, W = typeof e.windowMargin == "string" ? parseFloat(e.windowMargin) : e.windowMargin, m = g(new I({
       position: V.Fixed
-    })), a = k(e.modelValue), S = k(null), i = k(null), r = k(void 0), f = k(void 0), w = k(!1), g = N(() => e.class), u = N(() => {
-      let t = ee(e.text);
+    })), c = g(e.modelValue), S = g(null), i = g(null), n = g(void 0), f = g(void 0), w = g(!1), L = P(() => e.class), p = P(() => {
+      let t = se(e.text);
       if (e.icon) {
-        let b = '<i class="' + e.icon + '"></i>';
-        e.iconAtEnd ? t += b : t = b + t;
+        let H = '<i class="' + e.icon + '"></i>';
+        e.iconAtEnd ? t += H : t = H + t;
       }
       return t;
-    }), O = N(() => h.value.getStyles()), L = () => {
-      e.remoteControl || (a.value = !1);
+    }), O = P(() => m.value.getStyles()), C = () => {
+      e.remoteControl || (c.value = !1);
     };
     let T;
-    const d = () => {
+    const u = () => {
       T && clearTimeout(T), T = setTimeout(() => {
         if (e.engine === V.Absolute) {
-          h.value.assign(ie(
+          m.value.assign(ce(
             e.referrer,
-            n,
+            s,
             e.referrerWidth,
             e.locationX,
             e.locationY
           ));
           return;
         }
-        h.value.assign(re(
+        m.value.assign(ue(
           e.referrer,
           W,
-          n,
+          s,
           e.referrerWidth,
           e.compensationX,
           e.compensationY,
@@ -136,37 +143,37 @@ const ie = (l, o, s, c, e) => {
         ));
       }, 50);
     }, R = (t) => {
-      if (!e.alwaysOpen && a.value && !e.remoteControl && !(i.value.contains(t.target) || e.referrer.contains(t.target))) {
-        L();
+      if (!e.alwaysOpen && c.value && !e.remoteControl && !(i.value.contains(t.target) || e.referrer.contains(t.target))) {
+        C();
         return;
       }
     }, E = (t) => {
-      e.remoteControl || (w.value && e.showOnReferrerHover ? (r.value !== void 0 && clearTimeout(r.value), f.value !== void 0 && clearTimeout(f.value), r.value = setTimeout(() => {
-        a.value = !0, clearTimeout(r.value), clearTimeout(f.value);
-      }, e.showOnReferrerHoverDelay)) : !w.value && e.hideOnReferrerLeave ? (r.value !== void 0 && clearTimeout(r.value), f.value !== void 0 && clearTimeout(f.value), f.value = setTimeout(() => {
-        a.value = !1, clearTimeout(f.value), clearTimeout(r.value);
-      }, e.showOnReferrerHoverDelay)) : w.value || (clearTimeout(r.value), clearTimeout(f.value)));
-    }, C = (t) => {
+      e.remoteControl || (w.value && e.showOnReferrerHover ? (n.value !== void 0 && clearTimeout(n.value), f.value !== void 0 && clearTimeout(f.value), n.value = setTimeout(() => {
+        c.value = !0, clearTimeout(n.value), clearTimeout(f.value);
+      }, e.showOnReferrerHoverDelay)) : !w.value && e.hideOnReferrerLeave ? (n.value !== void 0 && clearTimeout(n.value), f.value !== void 0 && clearTimeout(f.value), f.value = setTimeout(() => {
+        c.value = !1, clearTimeout(f.value), clearTimeout(n.value);
+      }, e.showOnReferrerHoverDelay)) : w.value || (clearTimeout(n.value), clearTimeout(f.value)));
+    }, b = (t) => {
       w.value = !0, E();
-    }, v = (t) => {
+    }, h = (t) => {
       w.value = !1, E();
     };
-    I(() => e.modelValue, (t) => a.value = t), I(a, (t) => {
-      t && d(), !e.remoteControl && s("update:modelValue", t);
+    j(() => e.modelValue, (t) => c.value = t), j(c, (t) => {
+      t && u(), !e.remoteControl && d("update:modelValue", t);
     });
-    let x;
-    const P = () => {
-      clearTimeout(x), x = setTimeout(() => d(), 1);
+    let G;
+    const M = () => {
+      clearTimeout(G), G = setTimeout(() => u(), 1);
     };
-    return K(() => {
-      if (window.addEventListener("click", R), window.addEventListener("scroll", P), window.addEventListener("resize", d), e.referrer) {
+    return oe(() => {
+      if (window.addEventListener("click", R), window.addEventListener("scroll", M), window.addEventListener("resize", u), e.referrer) {
         let t = e.referrer.closest(".lkt-modal");
-        t && t.addEventListener("scroll", d), e.showOnReferrerHover && e.referrer.addEventListener("mousemove", C), e.hideOnReferrerLeave && e.referrer.addEventListener("mouseleave", v);
+        t && t.addEventListener("scroll", u), e.showOnReferrerHover && e.referrer.addEventListener("mousemove", b), e.hideOnReferrerLeave && e.referrer.addEventListener("mouseleave", h);
       }
-      a.value && d(), Q(() => {
+      c.value && u(), ie(() => {
         const t = new MutationObserver(() => {
           setTimeout(() => {
-            d();
+            u();
           }, 1);
         });
         t.observe(i.value, {
@@ -175,78 +182,98 @@ const ie = (l, o, s, c, e) => {
           attributes: !1
         }), S.value = t;
       });
-    }), Z(() => {
-      var t, b;
-      if (window.removeEventListener("click", R), window.removeEventListener("scroll", P), window.removeEventListener("resize", d), e.referrer) {
-        let A = e.referrer.closest(".lkt-modal");
-        A && A.removeEventListener("scroll", d), e.showOnReferrerHover && e.referrer.removeEventListener("mousemove", C), e.hideOnReferrerLeave && e.referrer.removeEventListener("mouseleave", v);
+    }), le(() => {
+      var t, H;
+      if (window.removeEventListener("click", R), window.removeEventListener("scroll", M), window.removeEventListener("resize", u), e.referrer) {
+        let _ = e.referrer.closest(".lkt-modal");
+        _ && _.removeEventListener("scroll", u), e.showOnReferrerHover && e.referrer.removeEventListener("mousemove", b), e.hideOnReferrerLeave && e.referrer.removeEventListener("mouseleave", h);
       }
-      typeof ((t = S.value) == null ? void 0 : t.disconnect) == "function" && ((b = S.value) == null || b.disconnect());
-    }), (t, b) => t.teleport ? (p(), X(Y, {
-      key: 0,
-      to: t.teleport
-    }, [
-      G(B("div", {
+      typeof ((t = S.value) == null ? void 0 : t.disconnect) == "function" && ((H = S.value) == null || H.disconnect());
+    }), (t, H) => {
+      var $, U;
+      const _ = re("lkt-polymorphic-element");
+      return t.teleport ? (r(), A(ne, {
+        key: 0,
+        to: t.teleport
+      }, [
+        q(B("div", {
+          ref_key: "sizerElement",
+          ref: i,
+          class: k(["lkt-tooltip", L.value]),
+          style: z(O.value)
+        }, [
+          (($ = t.content) == null ? void 0 : $.length) > 0 ? (r(), a("div", {
+            key: 0,
+            class: k(["lkt-tooltip-content", t.contentClass])
+          }, [
+            t.indicator ? (r(), a("div", ve)) : F("", !0),
+            B("div", pe, [
+              (r(!0), a(J, null, K(t.content, (D) => (r(), A(_, Q({ ref_for: !0 }, D), null, 16))), 256))
+            ])
+          ], 2)) : Z(v).default ? (r(), a("div", {
+            key: 1,
+            class: k(["lkt-tooltip-content", t.contentClass])
+          }, [
+            t.indicator ? (r(), a("div", he)) : F("", !0),
+            B("div", me, [
+              X(t.$slots, "default", { doClose: C })
+            ])
+          ], 2)) : (r(), a("div", {
+            key: 2,
+            class: k(["lkt-tooltip-content", t.contentClass])
+          }, [
+            t.indicator ? (r(), a("div", ke)) : (r(), a("div", {
+              key: 1,
+              class: "lkt-tooltip-content-inner",
+              innerHTML: p.value
+            }, null, 8, ye))
+          ], 2))
+        ], 6), [
+          [x, c.value]
+        ])
+      ], 8, ["to"])) : q((r(), a("div", {
+        key: 1,
         ref_key: "sizerElement",
         ref: i,
-        class: H(["lkt-tooltip", g.value]),
-        style: M(O.value)
+        class: k(["lkt-tooltip", L.value]),
+        style: z(O.value)
       }, [
-        $(c).default ? (p(), m("div", {
+        ((U = t.content) == null ? void 0 : U.length) > 0 ? (r(), a("div", {
           key: 0,
-          class: H(["lkt-tooltip-content", t.contentClass])
+          class: k(["lkt-tooltip-content", t.contentClass])
         }, [
-          t.indicator ? (p(), m("div", ne)) : _("", !0),
-          B("div", se, [
-            U(t.$slots, "default", { doClose: L })
+          t.indicator ? (r(), a("div", we)) : F("", !0),
+          B("div", Te, [
+            (r(!0), a(J, null, K(t.content, (D) => (r(), A(_, Q({ ref_for: !0 }, D), null, 16))), 256))
           ])
-        ], 2)) : (p(), m("div", {
+        ], 2)) : Z(v).default ? (r(), a("div", {
           key: 1,
-          class: H(["lkt-tooltip-content", t.contentClass])
+          class: k(["lkt-tooltip-content", t.contentClass])
         }, [
-          t.indicator ? (p(), m("div", ae)) : _("", !0),
-          B("div", {
+          t.indicator ? (r(), a("div", ge)) : F("", !0),
+          B("div", Le, [
+            X(t.$slots, "default", { doClose: C })
+          ])
+        ], 2)) : (r(), a("div", {
+          key: 2,
+          class: k(["lkt-tooltip-content", t.contentClass])
+        }, [
+          t.indicator ? (r(), a("div", Ce)) : (r(), a("div", {
+            key: 1,
             class: "lkt-tooltip-content-inner",
-            innerHTML: u.value
-          }, null, 8, fe)
+            innerHTML: p.value
+          }, null, 8, be))
         ], 2))
-      ], 6), [
-        [j, a.value]
-      ])
-    ], 8, ["to"])) : G((p(), m("div", {
-      key: 1,
-      ref_key: "sizerElement",
-      ref: i,
-      class: H(["lkt-tooltip", g.value]),
-      style: M(O.value)
-    }, [
-      $(c).default ? (p(), m("div", {
-        key: 0,
-        class: H(["lkt-tooltip-content", t.contentClass])
-      }, [
-        t.indicator ? (p(), m("div", de)) : _("", !0),
-        B("div", ce, [
-          U(t.$slots, "default", { doClose: L })
-        ])
-      ], 2)) : (p(), m("div", {
-        key: 1,
-        class: H(["lkt-tooltip-content", t.contentClass])
-      }, [
-        t.indicator ? (p(), m("div", ue)) : _("", !0),
-        B("div", {
-          class: "lkt-tooltip-content-inner",
-          innerHTML: u.value
-        }, null, 8, ve)
-      ], 2))
-    ], 6)), [
-      [j, a.value]
-    ]);
+      ], 6)), [
+        [x, c.value]
+      ]);
+    };
   }
-}), ye = {
+}), Ee = {
   install: (l) => {
-    l.component("lkt-tooltip") === void 0 && l.component("lkt-tooltip", pe);
+    l.component("lkt-tooltip") === void 0 && l.component("lkt-tooltip", He);
   }
 };
 export {
-  ye as default
+  Ee as default
 };

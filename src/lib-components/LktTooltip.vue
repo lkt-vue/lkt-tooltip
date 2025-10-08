@@ -2,15 +2,7 @@
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots, watch} from "vue";
 import {PositionInstance} from "../instances/PositionInstance";
 import {getAbsoluteEnginePosition, getFixedEnginePosition} from "../functions/positioning-functions";
-import {
-    extractI18nValue,
-    getDefaultValues,
-    Tooltip,
-    TooltipConfig,
-    TooltipLocationX,
-    TooltipLocationY,
-    TooltipPositionEngine
-} from "lkt-vue-kernel";
+import {extractI18nValue, getDefaultValues, Tooltip, TooltipConfig, TooltipPositionEngine} from "lkt-vue-kernel";
 
 const emit = defineEmits([
     'update:modelValue'
@@ -241,7 +233,15 @@ onBeforeUnmount(() => {
                 class="lkt-tooltip"
                 :class="computedClassName"
                 :style="computedStyles">
-                <template v-if="slots.default">
+                <template v-if="content?.length > 0">
+                    <div class="lkt-tooltip-content" :class="contentClass">
+                        <div v-if="indicator" class="lkt-tooltip-indicator"/>
+                        <div class="lkt-tooltip-content-inner">
+                            <lkt-polymorphic-element v-for="el in content" v-bind="el"/>
+                        </div>
+                    </div>
+                </template>
+                <template v-else-if="slots.default">
                     <div class="lkt-tooltip-content" :class="contentClass">
                         <div v-if="indicator" class="lkt-tooltip-indicator"/>
                         <div class="lkt-tooltip-content-inner">
@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
                 <template v-else>
                     <div class="lkt-tooltip-content" :class="contentClass">
                         <div v-if="indicator" class="lkt-tooltip-indicator"/>
-                        <div class="lkt-tooltip-content-inner" v-html="computedText"/>
+                        <div v-else class="lkt-tooltip-content-inner" v-html="computedText"/>
                     </div>
                 </template>
             </div>
@@ -265,7 +265,15 @@ onBeforeUnmount(() => {
             class="lkt-tooltip"
             :class="computedClassName"
             :style="computedStyles">
-            <template v-if="slots.default">
+            <template v-if="content?.length > 0">
+                <div class="lkt-tooltip-content" :class="contentClass">
+                    <div v-if="indicator" class="lkt-tooltip-indicator"/>
+                    <div class="lkt-tooltip-content-inner">
+                        <lkt-polymorphic-element v-for="el in content" v-bind="el"/>
+                    </div>
+                </div>
+            </template>
+            <template v-else-if="slots.default">
                 <div class="lkt-tooltip-content" :class="contentClass">
                     <div v-if="indicator" class="lkt-tooltip-indicator"/>
                     <div class="lkt-tooltip-content-inner">
@@ -276,7 +284,7 @@ onBeforeUnmount(() => {
             <template v-else>
                 <div class="lkt-tooltip-content" :class="contentClass">
                     <div v-if="indicator" class="lkt-tooltip-indicator"/>
-                    <div class="lkt-tooltip-content-inner" v-html="computedText"/>
+                    <div v-else class="lkt-tooltip-content-inner" v-html="computedText"/>
                 </div>
             </template>
         </div>

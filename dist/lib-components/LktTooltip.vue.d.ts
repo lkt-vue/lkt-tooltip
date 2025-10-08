@@ -1,4 +1,4 @@
-import { TooltipConfig, TooltipLocationX, TooltipLocationY, TooltipPositionEngine } from "lkt-vue-kernel";
+import { TooltipConfig, TooltipPositionEngine } from "lkt-vue-kernel";
 declare const slots: Readonly<{
     [name: string]: import("vue").Slot<any> | undefined;
 }>;
@@ -6,15 +6,15 @@ declare const isOpen: import("vue").Ref<boolean, boolean>, sizerElement: import(
 declare const computedClassName: import("vue").ComputedRef<string>, computedText: import("vue").ComputedRef<any>, computedStyles: import("vue").ComputedRef<import("lkt-ts-interfaces").LktObject>;
 declare const doClose: () => void;
 declare const __VLS_ctx: InstanceType<__VLS_PickNotAny<typeof __VLS_self, new () => {}>>;
-declare var __VLS_5: {
+declare var __VLS_9: {
     doClose: () => void;
-}, __VLS_7: {
+}, __VLS_15: {
     doClose: () => void;
 };
 type __VLS_Slots = __VLS_PrettifyGlobal<__VLS_OmitStringIndex<typeof __VLS_ctx.$slots> & {
-    default?: (props: typeof __VLS_5) => any;
+    default?: (props: typeof __VLS_9) => any;
 } & {
-    default?: (props: typeof __VLS_7) => any;
+    default?: (props: typeof __VLS_15) => any;
 }>;
 declare const __VLS_self: import("vue").DefineComponent<TooltipConfig, {
     slots: typeof slots;
@@ -30,6 +30,7 @@ declare const __VLS_self: import("vue").DefineComponent<TooltipConfig, {
     "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
 }>, {
     referrer: HTMLElement;
+    content: Array<import("lkt-vue-kernel").PolymorphicElementConfig>;
     text: string;
     class: string;
     icon: string;
@@ -42,8 +43,8 @@ declare const __VLS_self: import("vue").DefineComponent<TooltipConfig, {
     referrerMargin: number | string;
     windowMargin: number | string;
     referrerWidth: boolean;
-    locationY: TooltipLocationY;
-    locationX: TooltipLocationX;
+    locationY: import("lkt-vue-kernel").TooltipLocationY;
+    locationX: import("lkt-vue-kernel").TooltipLocationX;
     showOnReferrerHover: boolean;
     showOnReferrerHoverDelay: number;
     hideOnReferrerLeave: boolean;
@@ -60,6 +61,7 @@ declare const __VLS_component: import("vue").DefineComponent<TooltipConfig, {}, 
     "onUpdate:modelValue"?: ((...args: any[]) => any) | undefined;
 }>, {
     referrer: HTMLElement;
+    content: Array<import("lkt-vue-kernel").PolymorphicElementConfig>;
     text: string;
     class: string;
     icon: string;
@@ -72,8 +74,8 @@ declare const __VLS_component: import("vue").DefineComponent<TooltipConfig, {}, 
     referrerMargin: number | string;
     windowMargin: number | string;
     referrerWidth: boolean;
-    locationY: TooltipLocationY;
-    locationX: TooltipLocationX;
+    locationY: import("lkt-vue-kernel").TooltipLocationY;
+    locationX: import("lkt-vue-kernel").TooltipLocationX;
     showOnReferrerHover: boolean;
     showOnReferrerHoverDelay: number;
     hideOnReferrerLeave: boolean;

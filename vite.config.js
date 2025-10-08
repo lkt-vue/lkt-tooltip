@@ -36,7 +36,8 @@ export default {
                 'lkt-ts-interfaces',
                 'lkt-i18n',
                 'lkt-session',
-                'lkt-vue-kernel'
+                'lkt-vue-kernel',
+                'lkt-vue-app'
             ],
             output: {
                 globals: {
